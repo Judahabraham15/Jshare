@@ -12,7 +12,7 @@ const Home = () => {
           with rapid file sharing, globally accessible.
         </h1>
         <p className="text-slate-400 text-[18px] mt-[10px]">
-          Upload and get a shareable link in seconds.
+          Upload files and generate a shareable link in mere seconds.
         </p>
       </div>
       <div
@@ -46,7 +46,10 @@ const Home = () => {
           <input type="file" id="file_input" style={{ display: "none" }} />
         </label>
         <div className="flex flex-col justify-center items-center">
-          <h1>Drag And Drop Files.</h1>
+          <h1 className="text-slate-400 text-[17px] mb-1">
+            Drag & Drop files or choose them from your device.
+          </h1>
+          <p className="text-slate-400 text-[16px]">Maximum size: 100MB</p>
         </div>
       </div>
     </div>
