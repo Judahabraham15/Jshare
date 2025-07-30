@@ -1,5 +1,5 @@
 //! import React from 'react'
-
+import { FaGithub } from 'react-icons/fa';
 const Navbar = () => {
   return (
     <nav
@@ -7,6 +7,7 @@ const Navbar = () => {
      bg-[#1e293b] w-[100%] p-[2rem]  h-[80px] mt-0 mr-auto ml-auto "
     >
       <h1 className="text-3xl text-white font-semibold font-nunito">Jshare</h1>
+    <FaGithub className='text-3xl text-slate-300'/>
     </nav>
   );
 };
