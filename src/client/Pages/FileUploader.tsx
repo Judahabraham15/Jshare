@@ -2,9 +2,11 @@
 
 import { FiCheck } from "react-icons/fi";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
+  const [showPopup, setshowPopup] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -15,14 +17,18 @@ const FileUploader = () => {
   const MAX_TOTAL_SIZE = 100 * 1024 * 1024;
   const UploadFile = () => {
     if (!selectedFiles) {
-      alert("Please Select a file");
       return;
     }
     if (selectedFiles.size > MAX_TOTAL_SIZE) {
-      alert("file to large");
-      setSelectedFile(null)
+      setshowPopup(true);
+      setTimeout(() => {
+        setshowPopup(false);
+      }, 3000);
+
+      setSelectedFile(null);
       return;
     }
+
     console.log("FILE:", selectedFiles.name);
   };
   return (
@@ -82,12 +88,15 @@ const FileUploader = () => {
         </div>
       </div>
       <button
-        className="mt-6 px-[10rem] py-3 bg-blue-500 flex items-center justify-center
+        className={`mt-6 px-[10rem] py-3 bg-blue-500 flex items-center justify-center
         hover:bg-blue-600 text-white font-semibold 
         rounded-lg shadow transition duration-200 
-        disabled:opacity-50 font-nunito cursor-pointer"
+        disabled:opacity-50 font-nunito ${
+          selectedFiles ? "cursor-pointer" : "cursor-not-allowed"
+        }`}
         id="file"
         onClick={UploadFile}
+        disabled={!selectedFiles}
       >
         <FiCheck
           style={{ verticalAlign: "middle" }}
@@ -97,7 +106,7 @@ const FileUploader = () => {
         Upload File{" "}
         {selectedFiles
           ? (selectedFiles.size / (1024 * 1024)).toFixed(2)
-          : "0.00"}{" "}
+          : "0.00"}{" "}z
         MB
       </button>
       {selectedFiles && (
@@ -105,6 +114,27 @@ const FileUploader = () => {
           <p className="text-blue-400 mt-4 text-[15px]">{selectedFiles.name}</p>
         </div>
       )}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            className="fixed top-8 right-8 z-50 bg-blue-600 bg-opacity-95 border-1 border-blue-400 rounded-xl shadow-lg p-5 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeOut",
+              type: "spring",
+              stiffness: 120,
+              damping: 20,
+            }}
+          >
+            <p className="text-white font-nunito font-semibold">
+              🚫 File exceeds the maximum size limit (100MB).
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
