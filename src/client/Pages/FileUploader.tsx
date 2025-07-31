@@ -6,10 +6,9 @@ import { useState } from "react";
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
 
-   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
-     
     }
   };
   return (
@@ -81,8 +80,10 @@ const FileUploader = () => {
           className="mr-2"
         />{" "}
         Upload File{" "}
-        {selectedFiles ? (selectedFiles.size / (1024 * 1024)).toFixed(2) : "0.00"}{" "}
-         MB
+        {selectedFiles
+          ? (selectedFiles.size / (1024 * 1024)).toFixed(2)
+          : "0.00"}{" "}
+        MB
       </button>
       {selectedFiles && (
         <div>
