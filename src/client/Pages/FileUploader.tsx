@@ -11,6 +11,20 @@ const FileUploader = () => {
       setSelectedFile(e.target.files[0]);
     }
   };
+  // ? const btn  = document.querySelector("#file");
+  const MAX_TOTAL_SIZE = 100 * 1024 * 1024;
+  const UploadFile = () => {
+    if (!selectedFiles) {
+      alert("Please Select a file");
+      return;
+    }
+    if (selectedFiles.size > MAX_TOTAL_SIZE) {
+      alert("file to large");
+      setSelectedFile(null)
+      return;
+    }
+    console.log("FILE:", selectedFiles.name);
+  };
   return (
     <div className="min-h-[100vh] flex flex-col items-center justify-center mt-[6.5rem]">
       <div
@@ -71,8 +85,9 @@ const FileUploader = () => {
         className="mt-6 px-[10rem] py-3 bg-blue-500 flex items-center justify-center
         hover:bg-blue-600 text-white font-semibold 
         rounded-lg shadow transition duration-200 
-        disabled:opacity-50 font-nunito"
-        disabled={!selectedFiles}
+        disabled:opacity-50 font-nunito cursor-pointer"
+        id="file"
+        onClick={UploadFile}
       >
         <FiCheck
           style={{ verticalAlign: "middle" }}
