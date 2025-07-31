@@ -1,13 +1,13 @@
 import "./App.css";
-import Home from "./client/Pages/Home";
 import Navbar from "./client/Components/Navbar";
+import FileUploader from "./client/Pages/FileUploader";
 
 
 function App() {
   return (
     <>
    <Navbar/>
-   <Home/>
+   <FileUploader/>
     </>
   );
 }

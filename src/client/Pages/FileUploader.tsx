@@ -1,8 +1,19 @@
-// import React from 'react'
+//! import React from 'react'
 
-const Home = () => {
+import { FiCheck } from "react-icons/fi";
+import { useState } from "react";
+
+const FileUploader = () => {
+  const [selectedFiles, setSelectedFile] = useState<File | null>(null);
+
+   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+     
+    }
+  };
   return (
-    <div className="min-h-[100vh] flex flex-col items-center justify-center mt-[4rem]">
+    <div className="min-h-[100vh] flex flex-col items-center justify-center mt-[6.5rem]">
       <div
         className="flex flex-col items-center justify-center p-[20px]
        max-w-[700px] text-center font-nunito"
@@ -23,7 +34,7 @@ const Home = () => {
             rounded-lg
             cursor-pointer
             transition duration-200
-            hover:border-blue-500 focus:outline-none
+            hover:border-blue-600 focus:outline-none
             items-center justify-center"
       >
         <label htmlFor="file_input">
@@ -37,13 +48,18 @@ const Home = () => {
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            className="lucide lucide-upload w-12 h-12 mx-auto mb-4 text-blue-500"
+            className="lucide lucide-upload w-12 h-12 mx-auto mb-4 text-blue-500 cursor-pointer"
           >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" x2="12" y1="3" y2="15"></line>
           </svg>
-          <input type="file" id="file_input" style={{ display: "none" }} />
+          <input
+            type="file"
+            id="file_input"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
         </label>
         <div className="flex flex-col justify-center items-center">
           <h1 className="text-slate-400 text-[17px] mb-1">
@@ -52,8 +68,29 @@ const Home = () => {
           <p className="text-slate-400 text-[16px]">Maximum size: 100MB</p>
         </div>
       </div>
+      <button
+        className="mt-6 px-[10rem] py-3 bg-blue-500 flex items-center justify-center
+        hover:bg-blue-600 text-white font-semibold 
+        rounded-lg shadow transition duration-200 
+        disabled:opacity-50 font-nunito"
+        disabled={!selectedFiles}
+      >
+        <FiCheck
+          style={{ verticalAlign: "middle" }}
+          size={20}
+          className="mr-2"
+        />{" "}
+        Upload File{" "}
+        {selectedFiles ? (selectedFiles.size / (1024 * 1024)).toFixed(2) : "0.00"}{" "}
+         MB
+      </button>
+      {selectedFiles && (
+        <div>
+          <p className="text-blue-400 mt-4 text-[15px]">{selectedFiles.name}</p>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Home;
+export default FileUploader;
