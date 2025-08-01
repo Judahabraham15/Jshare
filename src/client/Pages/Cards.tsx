@@ -28,7 +28,8 @@ const Cards = () => {
         {cardContent.map(({ text, icon, desc }, index) => (
           <div
             key={index}
-            className="bg-[#181c2f] rounded-xl shadow-lg p-8 flex flex-col items-start transition hover:scale-105 hover:shadow-xl"
+            className="bg-[#181c2f] border rounded-xl shadow-lg p-8 flex flex-col items-start transition hover:scale-105 hover:shadow-xl"
+            style={{ borderColor: "rgba(59, 130, 246, 0.40)" }}
           >
             <span
               className=" mb-3 border-1 border-blue-500 p-3 rounded-full flex items-center justify-center w-13 h-13"

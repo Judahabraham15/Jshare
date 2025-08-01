@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
-  const [showPopup, setshowPopup] = useState(false);
+  const [showPopup, setshowPopup] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -28,8 +29,14 @@ const FileUploader = () => {
       setSelectedFile(null);
       return;
     }
-
+    setUploading(true);
     console.log("FILE:", selectedFiles.name);
+    setUploading(false);
+    //* Creating the FormData for organisation.
+    const formData: FormData = new FormData();
+    formData.append("file", selectedFiles);
+    //? const res = formData.get("file");
+    //? console.log(res);
   };
   return (
     <div className="min-h-[100vh] flex flex-col items-center justify-center mt-[6.5rem]">
@@ -96,17 +103,17 @@ const FileUploader = () => {
         }`}
         id="file"
         onClick={UploadFile}
-        disabled={!selectedFiles}
+        disabled={!selectedFiles || uploading}
       >
         <FiCheck
           style={{ verticalAlign: "middle" }}
           size={20}
           className="mr-2"
         />{" "}
-        Upload File{" "}
+        {uploading ? "Uploading File" : "Upload File"}{" "}
         {selectedFiles
           ? (selectedFiles.size / (1024 * 1024)).toFixed(2)
-          : "0.00"}{" "}z
+          : "0.00"}{" "}
         MB
       </button>
       {selectedFiles && (
