@@ -3,20 +3,23 @@
 import { FiCheck } from "react-icons/fi";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Axios from "axios";
+
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
   const [showPopup, setshowPopup] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+  const [status, setStatus] = useState<fileStatus>("idle");
+  type fileStatus = "idle" | "Successful" | "Failed";
+  const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
       setSelectedFile(e.target.files[0]);
     }
   };
   // ? const btn  = document.querySelector("#file");
   const MAX_TOTAL_SIZE = 100 * 1024 * 1024;
-  const UploadFile = () => {
+  const UploadFile: () => Promise<void> = async () => {
     if (!selectedFiles) {
       return;
     }
@@ -30,11 +33,36 @@ const FileUploader = () => {
       return;
     }
     setUploading(true);
-    console.log("FILE:", selectedFiles.name);
-    setUploading(false);
-    //* Creating the FormData for organisation.
+    // console.log("FILE:", selectedFiles.name);
+
+    //* Creating the FormData for organisation.https://api.escuelajs.co/api/v1/files/upload
+
     const formData: FormData = new FormData();
     formData.append("file", selectedFiles);
+
+    try {
+      const response = await Axios.post("https://httpbin.org/post", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setStatus("Successful");
+      setTimeout(() => {
+        setStatus("idle");
+      }, 3000);
+   
+      console.log("Successful:", response.data);
+    } catch (error) {
+      setStatus("Failed");
+      setTimeout(() => {
+        setStatus("idle")
+      }, 3000);
+      console.error("Upload Failed:", error);
+    } finally {
+      setUploading(false);
+      setSelectedFile(null);
+    }
+
     //? const res = formData.get("file");
     //? console.log(res);
   };
@@ -71,9 +99,9 @@ const FileUploader = () => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="lucide lucide-upload w-12 h-12 mx-auto mb-4 text-blue-500 cursor-pointer"
           >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -84,7 +112,7 @@ const FileUploader = () => {
             type="file"
             id="file_input"
             style={{ display: "none" }}
-            onChange={handleFileChange}
+            onChange={handleFileChanged}
           />
         </label>
         <div className="flex flex-col justify-center items-center">
@@ -141,6 +169,45 @@ const FileUploader = () => {
             </p>
           </motion.div>
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+      {status === "Successful" ? (
+        <motion.div
+            className="fixed top-8 right-8 z-50 bg-blue-600 bg-opacity-95 border-1 border-blue-400 rounded-xl shadow-lg p-5 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeOut",
+              type: "spring",
+              stiffness: 120,
+              damping: 20,
+            }}
+          >
+          <p className="text-white font-semibold font-nunito"> ✅ File Uploaded Successfully</p>
+        </motion.div>
+        
+      ) : status === "Failed" ? (
+        <motion.div
+            className="fixed top-8 right-8 z-50 bg-blue-600 bg-opacity-95 border-1 border-blue-400 rounded-xl shadow-lg p-5 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            transition={{
+              duration: 0.3,
+              ease: "easeOut",
+              type: "spring",
+              stiffness: 120,
+              damping: 20,
+            }}
+          >
+           <p className="text-white font-semibold font-nunito"> ❌ Network Error</p>
+        </motion.div>
+       
+      ) : (
+        "idle"
+      )}
       </AnimatePresence>
     </div>
   );
