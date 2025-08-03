@@ -1,16 +1,16 @@
 //! import React from 'react'
 
-import { FiCheck } from "react-icons/fi";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Axios from "axios";
-
+import Axios, { AxiosError } from "axios";
+import { FiCheckCircle } from "react-icons/fi";
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
   const [showPopup, setshowPopup] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
   const [status, setStatus] = useState<fileStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   type fileStatus = "idle" | "Successful" | "Failed";
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -39,28 +39,44 @@ const FileUploader = () => {
 
     const formData: FormData = new FormData();
     formData.append("file", selectedFiles);
-
     try {
-      const response = await Axios.post("https://httpbin.org/post", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setStatus("Successful");
-      setTimeout(() => {
-        setStatus("idle");
-      }, 3000);
-   
-      console.log("Successful:", response.data);
+      const response = await Axios.post("https://httpbin.org/post", formData);
+      if (response.status === 200) {
+        setStatus("Successful");
+        setTimeout(() => {
+          setStatus("idle");
+        }, 3000);
+        console.log("Upload successful:", response.data);
+      } else {
+        setStatus("Failed");
+        setErrorMessage(" ❌ Upload failed. Please try again.");
+        setTimeout(() => {
+          setStatus("idle");
+        }, 3000);
+        console.error(
+          "Upload Failed: Server responded with status",
+          response.status
+        );
+      }
+      setSelectedFile(null);
     } catch (error) {
       setStatus("Failed");
+      const axiosError = error as AxiosError;
+     if (axiosError.code === "ERR_NETWORK") {
+        setErrorMessage("❌ No internet connection. Please check your network.");
+      } else if (axiosError.response?.status === 413) {
+        setErrorMessage("❌ File too large for the server.");
+      } else if (axiosError.response?.status === 400) {
+        setErrorMessage("❌ Invalid file format.");
+      } else {
+        setErrorMessage("❌ Upload failed. Something went wrong!");
+      }
       setTimeout(() => {
-        setStatus("idle")
+        setStatus("idle");
       }, 3000);
       console.error("Upload Failed:", error);
     } finally {
       setUploading(false);
-      setSelectedFile(null);
     }
 
     //? const res = formData.get("file");
@@ -133,9 +149,9 @@ const FileUploader = () => {
         onClick={UploadFile}
         disabled={!selectedFiles || uploading}
       >
-        <FiCheck
+        <FiCheckCircle
           style={{ verticalAlign: "middle" }}
-          size={20}
+          size={18}
           className="mr-2"
         />{" "}
         {uploading ? "Uploading File" : "Upload File"}{" "}
@@ -171,8 +187,8 @@ const FileUploader = () => {
         )}
       </AnimatePresence>
       <AnimatePresence>
-      {status === "Successful" ? (
-        <motion.div
+        {status === "Successful" && (
+          <motion.div
             className="fixed top-8 right-8 z-50 bg-blue-600 bg-opacity-95 border-1 border-blue-400 rounded-xl shadow-lg p-5 flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -185,11 +201,14 @@ const FileUploader = () => {
               damping: 20,
             }}
           >
-          <p className="text-white font-semibold font-nunito"> ✅ File Uploaded Successfully</p>
-        </motion.div>
-        
-      ) : status === "Failed" ? (
-        <motion.div
+            <p className="text-white font-semibold font-nunito">
+              {" "}
+              ✅ File Uploaded Successfully
+            </p>
+          </motion.div>
+        )}{" "}
+        {status === "Failed" && (
+          <motion.div
             className="fixed top-8 right-8 z-50 bg-blue-600 bg-opacity-95 border-1 border-blue-400 rounded-xl shadow-lg p-5 flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -202,12 +221,12 @@ const FileUploader = () => {
               damping: 20,
             }}
           >
-           <p className="text-white font-semibold font-nunito"> ❌ Network Error</p>
-        </motion.div>
-       
-      ) : (
-        "idle"
-      )}
+            <p className="text-white font-semibold font-nunito">
+              {" "}
+            {errorMessage}
+            </p>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
