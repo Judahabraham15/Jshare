@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Axios, { AxiosError } from "axios";
 import { FiCheckCircle, FiCopy } from "react-icons/fi";
+import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
@@ -12,8 +13,20 @@ const FileUploader = () => {
   const [status, setStatus] = useState<fileStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [link, setLink] = useState<string>("");
+  const [copied, setCopied] = useState<boolean>(false);
   type fileStatus = "idle" | "Successful" | "Failed";
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 3000);
+    } catch (error) {
+      setErrorMessage("❌ Failed to copy link.");
+    }
+  };
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedFile(e.target.files[0]);
@@ -49,14 +62,12 @@ const FileUploader = () => {
         setLink(response.data.link || "No Link Provided!");
         setTimeout(() => {
           setStatus("idle");
-          if(!link){
-            setLink("")
-          }
           console.log(response.data.link || "No link provided");
         }, 3000);
         console.log("Upload successful:", response.data);
       } else {
         setStatus("Failed");
+        setLink("")
         setErrorMessage(" ❌ Upload failed. Please try again.");
         setTimeout(() => {
           setStatus("idle");
@@ -171,13 +182,25 @@ const FileUploader = () => {
         MB
       </button>
       {link && (
-        <div className="mt-4 p-4 bg-blue-500 text-white rounded-lg shadow-md flex items-center justify-between">
-          <p className="text-white">File Link: {link}</p>
-          <button>
-            <FiCopy size={18}/>
+        <div className="mt-6 flex items-center justify-between py-3 px-[10rem] bg-slate-400 rounded-lg ">
+          <PiLinkSimpleHorizontalDuotone
+            size={20}
+            className="mr-2"
+            style={{ verticalAlign: "middle" }}
+          />
+          <p className="font-semibold text-[1.1rem] underline cursor-pointer">
+            File Link: {link}
+          </p>
+          <button onClick={copyLink}>
+            <FiCopy
+              size={22}
+              style={{ verticalAlign: "middle" }}
+              className="ml-5 cursor-pointer"
+            />
           </button>
         </div>
       )}
+
       {selectedFiles && (
         <div>
           <p className="text-blue-400 mt-4 text-[15px]">{selectedFiles.name}</p>
@@ -245,6 +268,27 @@ const FileUploader = () => {
             </p>
           </motion.div>
         )}
+        {copied && (
+           <motion.div
+             className="fixed top-8 right-8 z-50 bg-blue-600 bg-opacity-95 border-1 border-blue-400 rounded-xl shadow-lg p-5 flex items-center justify-center"
+             initial={{ opacity: 0, scale: 0.8, y: -20 }}
+             animate={{ opacity: 1, scale: 1, y: 0 }}
+             exit={{ opacity: 0, scale: 0.8, y: -20 }}
+             transition={{
+               duration: 0.3,
+               ease: "easeOut",
+               type: "spring",
+               stiffness: 120,
+               damping: 20,
+             }}
+           >
+             <p className="text-white font-semibold font-nunito">
+               {" "}
+               ✅ Link Copied to Clipboard
+             </p>
+           </motion.div>
+        )}
+       
       </AnimatePresence>
     </div>
   );

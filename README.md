@@ -12,4 +12,4 @@
 - ⚡ Fast and responsive UI built with React + TypeScript
 <br/>
 
-<a><img width="1883" height="881" alt="Screenshot 2025-08-01 231600" src="https://github.com/user-attachments/assets/95b29bba-8919-413f-a1f1-a233c9b6a9d1" /></a>
+<a href=""><img width="1883" height="881" alt="Screenshot 2025-08-01 231600" src="https://github.com/user-attachments/assets/95b29bba-8919-413f-a1f1-a233c9b6a9d1" /></a>
