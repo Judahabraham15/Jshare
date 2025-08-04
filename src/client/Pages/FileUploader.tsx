@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Axios, { AxiosError } from "axios";
-import { FiCheckCircle } from "react-icons/fi";
+import { FiCheckCircle, FiCopy } from "react-icons/fi";
 
 const FileUploader = () => {
   const [selectedFiles, setSelectedFile] = useState<File | null>(null);
@@ -11,10 +11,13 @@ const FileUploader = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [status, setStatus] = useState<fileStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [link, setLink] = useState<string>("");
   type fileStatus = "idle" | "Successful" | "Failed";
+
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedFile(e.target.files[0]);
+      setLink("");
     }
   };
   // ? const btn  = document.querySelector("#file");
@@ -43,8 +46,13 @@ const FileUploader = () => {
       const response = await Axios.post("https://httpbin.org/post", formData);
       if (response.status === 200) {
         setStatus("Successful");
+        setLink(response.data.link || "No Link Provided!");
         setTimeout(() => {
           setStatus("idle");
+          if(!link){
+            setLink("")
+          }
+          console.log(response.data.link || "No link provided");
         }, 3000);
         console.log("Upload successful:", response.data);
       } else {
@@ -62,8 +70,10 @@ const FileUploader = () => {
     } catch (error) {
       setStatus("Failed");
       const axiosError = error as AxiosError;
-     if (axiosError.code === "ERR_NETWORK") {
-        setErrorMessage("❌ No internet connection. Please check your network.");
+      if (axiosError.code === "ERR_NETWORK") {
+        setErrorMessage(
+          "❌ No internet connection. Please check your network."
+        );
       } else if (axiosError.response?.status === 413) {
         setErrorMessage("❌ File too large for the server.");
       } else if (axiosError.response?.status === 400) {
@@ -160,6 +170,14 @@ const FileUploader = () => {
           : "0.00"}{" "}
         MB
       </button>
+      {link && (
+        <div className="mt-4 p-4 bg-blue-500 text-white rounded-lg shadow-md flex items-center justify-between">
+          <p className="text-white">File Link: {link}</p>
+          <button>
+            <FiCopy size={18}/>
+          </button>
+        </div>
+      )}
       {selectedFiles && (
         <div>
           <p className="text-blue-400 mt-4 text-[15px]">{selectedFiles.name}</p>
@@ -223,7 +241,7 @@ const FileUploader = () => {
           >
             <p className="text-white font-semibold font-nunito">
               {" "}
-            {errorMessage}
+              {errorMessage}
             </p>
           </motion.div>
         )}
