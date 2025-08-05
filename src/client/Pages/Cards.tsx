@@ -21,10 +21,10 @@ const cardContent = [
 const Cards = () => {
   return (
     <div className="flex flex-col w-full items-center justify-center min-h-[40vh] font-nunito mt-[4rem] p-4">
-      <h1 className="text-white text-4xl font-bold mb-8">
+      <h1 className=" text-white text-3xl md:text-4xl font-bold mb-8">
         Key <span className="text-blue-500">Features</span>
       </h1>
-      <div className="grid grid-cols-3 gap-10 w-full max-w-7xl">
+      <div className=" sm:grid grid-cols-1 sm:gap-8 md:grid grid-cols-3 gap-10 w-full max-w-7xl">
         {cardContent.map(({ text, icon, desc }, index) => (
           <div
             key={index}
