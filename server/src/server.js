@@ -11,11 +11,14 @@ app.use(express.json());
 //* Serve uploaded files
 app.use("/files", express.static("uploads"));
 
+
+// TODO: THERE ARE BUGS TO FIX!!!😭
+
 //* Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    //! The destination on where the files should go
-    return callback(null, "uploads/");
+    //! The destination on where the files should go(i.e the folder it should go to.)
+    return callback(null, "UPLOADS/");
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9); //? Helped by Ai for this process
@@ -27,9 +30,15 @@ const storage = multer.diskStorage({
 });
 const Uploads = multer({
   storage: storage,
-  limits: { fileSize: 100 * 1024 * 1024 },
+  limits: { fileSize: 100 * 1024 * 1024 }, //? 100MB limit bro
 });
-app.post("/upload", Uploads.single("files"), (res, req) => {});
+
+//* UPLOAD ROUTE
+app.post("/upload", Uploads.single("file"), (res, req) => {
+  console.log(req.body);
+  console.log(req.file);
+});
+// const PORT = 3001
 app.listen(3001, () => {
   console.log("Server is running!");
 });
