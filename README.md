@@ -2,11 +2,11 @@
 
 
 
-**Jshare** is a sleek, modern web application that allows users to generate and share custom links with ease. Built with a powerful tech stack — React, TypeScript, and Node.js — Jshare is designed for speed, reliability, and scalability.
+**Jshare** is a sleek, modern web application that allows users to generate and share custom links with ease. Built with a powerful tech stack — React, TypeScript, and Node.js(Express.js and Multer for file Uploads) — Jshare is designed for speed, reliability, and scalability.
 
 ## 🚀 Features
 
-- 🔗 Generate short, shareable links
+- 🔗 Generate shareable links
 - 📊 Track link usage and analytics (optional)
 - 🛡️ Secure link generation with expiration and access control
 - ⚡ Fast and responsive UI built with React + TypeScript
