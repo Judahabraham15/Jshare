@@ -57,7 +57,7 @@ const FileUploader = () => {
     const formData: FormData = new FormData();
     formData.append("file", selectedFiles);
     try {
-      const response = await Axios.post("https://httpbin.org/post", formData);
+      const response = await Axios.post("https://localhost/post:3001", formData);
       if (response.status === 200) {
         setStatus("Successful");
         setLink(response.data.link || "No Link Provided!");
