@@ -61,11 +61,11 @@ app.post("/upload", Uploads.single("file"), (req, res) => {
   }
 });
 
-//Test Route
+//!Test Route
 app.get('/' , (req, res)=>{
   res.send('Server is running')
 })
-const PORT = 5174;
+const PORT = 3001;
 app.listen(PORT, () => {
   console.log("Server is running!");
 });

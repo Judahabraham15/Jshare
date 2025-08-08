@@ -8,7 +8,7 @@ import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
 import { IoMdImages } from "react-icons/io";
 
 const FileUploader = () => {
-  const [selectedFiles, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showPopup, setshowPopup] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
   const [status, setStatus] = useState<fileStatus>("idle");
@@ -16,7 +16,7 @@ const FileUploader = () => {
   const [link, setLink] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
-  type fileStatus= "idle" | "Successful" | "Failed";
+  type fileStatus = "idle" | "Successful" | "Failed";
 
   const copyLink = async () => {
     try {
@@ -38,10 +38,10 @@ const FileUploader = () => {
   // ? const btn  = document.querySelector("#file");
   const MAX_TOTAL_SIZE = 100 * 1024 * 1024;
   const uploadFile: () => Promise<void> = async () => {
-    if (!selectedFiles) {
+    if (!selectedFile) {
       return;
     }
-    if (selectedFiles.size > MAX_TOTAL_SIZE) {
+    if (selectedFile.size > MAX_TOTAL_SIZE) {
       setshowPopup(true);
       setTimeout(() => {
         setshowPopup(false);
@@ -56,11 +56,14 @@ const FileUploader = () => {
     //* Creating the FormData for organisation.https://api.escuelajs.co/api/v1/files/upload
 
     const formData: FormData = new FormData();
-    formData.append("file", selectedFiles);
+    formData.append("file", selectedFile);
     try {
       const response = await Axios.post(
-        "http://localhost:5174/upload",
-        formData
+        "http://localhost:3001/upload",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       if (response.status === 200) {
         setStatus("Successful");
@@ -155,11 +158,11 @@ const FileUploader = () => {
       </div>
       <button
         className={`mt-4 sm:mt-6 w-full max-w-xs sm:max-w-md md:max-w-lg py-3 bg-blue-500 flex items-center justify-center hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200 disabled:opacity-50 font-nunito ${
-          selectedFiles ? "cursor-pointer" : "cursor-not-allowed"
+          selectedFile ? "cursor-pointer" : "cursor-not-allowed"
         }`}
         id="file"
         onClick={uploadFile}
-        disabled={!selectedFiles || uploading}
+        disabled={!selectedFile || uploading}
       >
         <FiCheckCircle
           style={{ verticalAlign: "middle" }}
@@ -167,9 +170,7 @@ const FileUploader = () => {
           className="mr-2 sm:mr-3"
         />
         {uploading ? "Uploading File" : "Upload File"}{" "}
-        {selectedFiles
-          ? (selectedFiles.size / (1024 * 1024)).toFixed(2)
-          : "0.00"}{" "}
+        {selectedFile ? (selectedFile.size / (1024 * 1024)).toFixed(2) : "0.00"}{" "}
         MB
       </button>
       {link && (
@@ -191,7 +192,7 @@ const FileUploader = () => {
           </button>
         </div>
       )}
-      {selectedFiles && (
+      {selectedFile && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -212,10 +213,10 @@ const FileUploader = () => {
               <IoMdImages size={20} className="text-blue-400" />
               <div className="flex flex-col">
                 <p className="text-white text-base sm:text-lg font-medium truncate">
-                  {selectedFiles.name}
+                  {selectedFile.name}
                 </p>
                 <p className="text-slate-400 text-sm sm:text-[15px]">
-                  {(selectedFiles.size / (1024 * 1024)).toFixed(2)} MB
+                  {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                 </p>
               </div>
             </div>
