@@ -180,9 +180,12 @@ const FileUploader = () => {
             className="mr-2 sm:mr-3"
             style={{ verticalAlign: "middle" }}
           />
-          <p className="font-semibold text-sm sm:text-base underline cursor-pointer truncate">
+          <a
+            href={`/download/${link.split("/files/")[1]}`}
+            className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
+          >
             File Link: {link}
-          </p>
+          </a>
           <button onClick={copyLink}>
             <FiCopy
               size={18}
