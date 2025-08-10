@@ -175,6 +175,7 @@ const FileUploader = () => {
       </button>
       {link && (
         <div className="mt-4 sm:mt-6 flex items-center justify-between py-3 px-4 sm:px-6 md:px-8 bg-slate-400 rounded-lg w-full max-w-xs sm:max-w-md md:max-w-lg">
+         
           <PiLinkSimpleHorizontalDuotone
             size={18}
             className="mr-2 sm:mr-3"

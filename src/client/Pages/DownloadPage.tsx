@@ -1,58 +1,68 @@
-import Axios, { AxiosError }  from "axios"
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import {motion} from 'framer-motion'
-import {FiX , FiDownload } from "react-icons/fi";
-
+// DownloadPage.tsx (replace your current file with this)
+import Axios, { AxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FiX, FiDownload } from "react-icons/fi";
 import { IoMdImages } from "react-icons/io";
 
 const DownloadPage = () => {
-    interface FileInfo  {
-        name: string,
-        size: number
+  interface FileInfo {
+    name: string;
+    size: number;
+  }
+  const { filename } = useParams<{ filename: string }>();
+  const navigate = useNavigate();
+  const [fileInfo, setfileInfo] = useState<FileInfo | null>(null);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    if (!filename) {
+      setError("Invalid filename");
+      return;
     }
-    const {filename} = useParams<{filename : string}>()
-    const navigate = useNavigate()
-    const [fileInfo , setfileInfo] = useState<FileInfo | null>(null)
-    const [error, setError] = useState<string>('')
 
-    useEffect(()=>{
-        const fetchInfo = async () => {
-            try{
-                const response = await Axios.get(`http://localhost:3001/file-info/${filename}`)
-                setfileInfo(response.data)
-            }
-            catch(error: any){
-                 const axiosError = error as AxiosError
-                 if(axiosError.response?.status === 404){
-                    setError('File not Found')
-                 }
-                 else{
-                    setError('Failed to Fetch Details')
-                 }
-            }
-         }
-         fetchInfo()
-    } , [filename])
+    const fetchInfo = async () => {
+      try {
+        // encode filename to make URL-safe
+        const response = await Axios.get(
+          `http://localhost:3001/file-info/${encodeURIComponent(filename)}`
+        );
+        setfileInfo(response.data);
+      } catch (error: any) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+          setError("File not Found");
+        } else {
+          setError("Failed to Fetch Details");
+        }
+      }
+    };
+    fetchInfo();
+  }, [filename]);
 
+  const handleDownload = () => {
+    if (!fileInfo) return;
+    // encode here too
+    window.location.href = `http://localhost:3001/files/${encodeURIComponent(
+      fileInfo.name
+    )}`;
+  };
 
-    const handleDownload = () => { 
-        window.location.href = `http://localhost:3001/files/${filename}`
-     }
-    if(error){
-        return(
-           <div className="min-h-screen px-4 flex flex-col items-center justify-center bg-gray-900 text-white">
+  if (error) {
+    return (
+      <div className="min-h-screen px-4 flex flex-col items-center justify-center bg-gray-900 text-white">
         <p className="text-red-500 font-nunito text-lg">{error}</p>
         <button
           className="mt-4 py-2 px-4 bg-blue-500 hover:bg-blue-600 rounded-lg font-nunito"
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
         >
           Back to Home
         </button>
       </div>
     );
-    }
-     if (!fileInfo) {
+  }
+  if (!fileInfo) {
     return (
       <div className="min-h-screen px-4 flex flex-col items-center justify-center bg-gray-900 text-white">
         <p className="font-nunito text-lg">Loading...</p>
@@ -60,15 +70,15 @@ const DownloadPage = () => {
     );
   }
 
-    return (
+  return (
     <div className="min-h-screen px-4 flex flex-col items-center justify-center bg-gray-900 text-white">
       <motion.div
         initial={{ opacity: 0, scale: 0.8, y: -20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{
           duration: 0.3,
-          ease: 'easeOut',
-          type: 'spring',
+          ease: "easeOut",
+          type: "spring",
           stiffness: 120,
           damping: 20,
         }}
@@ -87,10 +97,9 @@ const DownloadPage = () => {
               <p className="text-slate-400 text-sm sm:text-[15px]">
                 Size: {(fileInfo.size / (1024 * 1024)).toFixed(2)} MB
               </p>
-             
             </div>
           </div>
-          <button onClick={() => navigate('/')}>
+          <button onClick={() => navigate("/")}>
             <FiX className="text-slate-400 hover:text-white" size={18} />
           </button>
         </div>
@@ -106,4 +115,4 @@ const DownloadPage = () => {
   );
 };
 
-export default DownloadPage
+export default DownloadPage;
