@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiX, FiDownload } from "react-icons/fi";
-import { IoMdImages } from "react-icons/io";
+
+import { HiArrowLeftStartOnRectangle } from "react-icons/hi2"
 
 const DownloadPage = () => {
   interface FileInfo {
     name: string;
     size: number;
     type: string;
+    storedFilename: string;
   }
   const { filename } = useParams<{ filename: string }>();
   const navigate = useNavigate();
@@ -45,7 +47,9 @@ const DownloadPage = () => {
 
     try {
       const response = await Axios.get(
-        `http://localhost:3001/files/${encodeURIComponent(fileInfo.name)}`,
+        `http://localhost:3001/files/${encodeURIComponent(
+          fileInfo.storedFilename
+        )}`,
         { responseType: "blob" } // <<-- important: tell Axios we want binary data
       );
 
@@ -86,8 +90,16 @@ const DownloadPage = () => {
 
   return (
     <div className="flex items-center justify-center p-6 flex-col mt-30 ">
+      
       <div className="space-y-10 max-w-md w-full">
-        <div className="w-full rounded-xl border-1 border-blue-500 bg-[#0c1221d9] py-6 px-4">
+        <div
+          className="flex flex-row"
+          onClick={() => navigate("/")}
+        >
+          <HiArrowLeftStartOnRectangle className="text-slate-400 mr-1 cursor-pointer" style={{ verticalAlign: "middle" }} size={20} />
+          <p className="text-slate-400 cursor-pointer">Back To Home</p>
+        </div>
+        <div className="w-full rounded-xl border border-blue-500 bg-[#0c1221d9] py-6 px-4 shadow-xl shadow-blue-500/20">
           <h1 className="text-white font-nunito text-2xl font-semibold">
             Congratulations!
           </h1>
@@ -104,9 +116,9 @@ const DownloadPage = () => {
               className="w-5 h-5 rounded-full"
               animate={{
                 background: [
-                  "linear-gradient(to bottom, #22c55e, #16a34a, #2563eb)", // green → blue
-                  "linear-gradient(to bottom, #ec4899, #f97316, #f59e0b)", // pink → orange → yellow
-                  "linear-gradient(to bottom, #06b6d4, #3b82f6, #8b5cf6)", // cyan → blue → purple
+                  "linear-gradient(to bottom, #22c55e, #16a34a, #2563eb)",
+                  "linear-gradient(to bottom, #ec4899, #f97316, #f59e0b)",
+                  "linear-gradient(to bottom, #06b6d4, #3b82f6, #8b5cf6)",
                 ],
               }}
               transition={{
@@ -144,16 +156,16 @@ const DownloadPage = () => {
             </button>
           </div>
           <div className="border-t-1 mt-6 pt-5 border-gray-600 flex justify-center items-center">
-           <div className="flex items-center gap-5 justify-center">
-            <span className="text-slate-400 text-xs flex flex-row gap-1.5">
-              <img
-              src="https://vercel.com/api/www/avatar?s=64&u=judahabraham15"
-              alt="profile"
-              className="w-2 h-2  mt-1 rounded-full text-white"
-            />
-              Threat free and Secured Download
-            </span>
-           </div>
+            <div className="flex items-center gap-5 justify-center">
+              <span className="text-slate-400 text-xs flex flex-row gap-1.5">
+                <img
+                  src="https://vercel.com/api/www/avatar?s=64&u=judahabraham15"
+                  alt="profile"
+                  className="w-2 h-2  mt-1 rounded-full text-white"
+                />
+                Threat free and Secured Download
+              </span>
+            </div>
           </div>
         </div>
       </div>
