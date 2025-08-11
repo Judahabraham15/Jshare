@@ -6,10 +6,11 @@
 
 ## 🚀 Features
 
-- 🔗 Generate shareable links
-- 📊 Track link usage and analytics (optional)
-- 🛡️ Secure link generation with expiration and access control
+- 🔗 Generate shareable links.
+- 📊 Track link usage and analytics (optional).
+- 🛡️ Secure link generation with access control.
 - ⚡ Fast and responsive UI built with React + TypeScript
+- 
 <br/>
 
 <a href=""><img width="1883" height="881" alt="Screenshot 2025-08-01 231600" src="https://github.com/user-attachments/assets/95b29bba-8919-413f-a1f1-a233c9b6a9d1" /></a>
