@@ -1,4 +1,3 @@
-// DownloadPage.tsx (replace your current file with this)
 import Axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +9,7 @@ const DownloadPage = () => {
   interface FileInfo {
     name: string;
     size: number;
+    type: string;
   }
   const { filename } = useParams<{ filename: string }>();
   const navigate = useNavigate();
@@ -24,7 +24,6 @@ const DownloadPage = () => {
 
     const fetchInfo = async () => {
       try {
-        // encode filename to make URL-safe
         const response = await Axios.get(
           `http://localhost:3001/file-info/${encodeURIComponent(filename)}`
         );
@@ -41,13 +40,28 @@ const DownloadPage = () => {
     fetchInfo();
   }, [filename]);
 
-  const handleDownload = () => {
-    if (!fileInfo) return;
-    // encode here too
-    window.location.href = `http://localhost:3001/files/${encodeURIComponent(
-      fileInfo.name
-    )}`;
-  };
+  //   const handleDownload = async () => {
+  //     if (!fileInfo) return;
+
+  //     try {
+  //       const response = await Axios.get(
+  //         `http://localhost:3001/files/${encodeURIComponent(fileInfo.name)}`,
+  //         { responseType: "blob" } // <<-- important: tell Axios we want binary data
+  //       );
+
+  //       // Create a download link from the received blob and click it
+  //       const url = window.URL.createObjectURL(response.data);
+  //       const a = document.createElement("a");
+  //       a.href = url;
+  //       a.download = fileInfo.name; // force the filename when saving
+  //       document.body.appendChild(a);
+  //       a.click();
+  //       a.remove();
+  //       window.URL.revokeObjectURL(url); // cleanup
+  //     } catch (err) {
+  //       console.error("Error downloading file:", err);
+  //     }
+  //   };
 
   if (error) {
     return (
@@ -71,46 +85,35 @@ const DownloadPage = () => {
   }
 
   return (
-    <div className="min-h-screen px-4 flex flex-col items-center justify-center bg-gray-900 text-white">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: -20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{
-          duration: 0.3,
-          ease: "easeOut",
-          type: "spring",
-          stiffness: 120,
-          damping: 20,
-        }}
-        className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-3xl bg-[#1e293b] rounded-lg p-4 sm:p-6"
-      >
-        <h1 className="text-white font-nunito font-semibold text-lg sm:text-xl mb-4">
-          File Details
-        </h1>
-        <div className="bg-[#0f172a] flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 rounded-lg w-full">
-          <div className="flex items-center gap-3 sm:gap-5">
-            <IoMdImages size={20} className="text-blue-400" />
-            <div className="flex flex-col">
-              <p className="text-white text-base sm:text-lg font-medium truncate">
-                {fileInfo.name}
-              </p>
-              <p className="text-slate-400 text-sm sm:text-[15px]">
-                Size: {(fileInfo.size / (1024 * 1024)).toFixed(2)} MB
-              </p>
+    <div className="flex items-center justify-center p-6 ">
+      <div className="space-y-10 max-w-md w-full">
+        <div className="w-full rounded-md border-1 border-blue-500 bg-[#0c1221d9] p-4">
+          <h1 className="text-white font-nunito text-2xl font-semibold">
+            Congratulations!
+          </h1>
+          <div className="flex flex-row mt-1">
+            <p className="text-white text-sm mr-2">
+              You have Successfully Uploaded Your File
+            </p>
+            <img
+              src="https://vercel.com/api/www/avatar?s=64&u=judahabraham15"
+              alt="profile"
+              className="w-5 h-5 rounded-full text-white"
+            />
+          </div>
+          <div className="flex items-center justify-center font-nunito mt-10">
+            <div className=" flex items-center justify-center w-20 h-20 bg-gradient-to-b
+             from-green-500 via-green-500 to-blue-600   rounded-3xl rotate-5 hover:rotate-0">
+              <h1 className="text-white text-sm bg-gradient-to-r from-black to-blue-500 px-2 py-1  font-bold rounded-full">
+                {fileInfo.type}
+              </h1>
             </div>
           </div>
-          <button onClick={() => navigate("/")}>
-            <FiX className="text-slate-400 hover:text-white" size={18} />
-          </button>
+          <h1 className="text-gray-400 text-center font-bold mt-5 text-2xl w-full max-w-2xl">
+            {fileInfo.name}
+          </h1>
         </div>
-        <button
-          className="mt-4 w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg flex items-center justify-center font-nunito"
-          onClick={handleDownload}
-        >
-          <FiDownload size={18} className="mr-2" />
-          Download File
-        </button>
-      </motion.div>
+      </div>
     </div>
   );
 };

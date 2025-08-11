@@ -157,7 +157,9 @@ const FileUploader = () => {
         </div>
       </div>
       <button
-        className={`mt-4 sm:mt-6 w-full max-w-xs sm:max-w-md md:max-w-lg py-3 bg-blue-500 flex items-center justify-center hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition duration-200 disabled:opacity-50 font-nunito ${
+        className={`mt-4 sm:mt-6 w-full max-w-xs sm:max-w-md md:max-w-lg py-3 bg-blue-500 flex 
+          items-center justify-center hover:bg-blue-600 text-white font-semibold rounded-lg shadow
+           transition duration-200 disabled:opacity-50 font-nunito ${
           selectedFile ? "cursor-pointer" : "cursor-not-allowed"
         }`}
         id="file"
