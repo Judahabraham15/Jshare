@@ -7,7 +7,11 @@ import { FiCheckCircle, FiCopy, FiX } from "react-icons/fi";
 import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
 import { IoMdImages } from "react-icons/io";
 
-const FileUploader = () => {
+interface FileUploaderProps {
+  setHasUploaded: (hasUploaded: boolean) => void;
+  setRefreshKey: (value: number | ((prev: number) => number)) => void;
+}
+const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showPopup, setshowPopup] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
@@ -68,6 +72,8 @@ const FileUploader = () => {
       if (response.status === 200) {
         setStatus("Successful");
         setLink(response.data.link || "No Link Provided!");
+        setHasUploaded(true);
+        setRefreshKey((prev) => prev + 1);
         setTimeout(() => {
           setStatus("idle");
           console.log(response.data.link || "No link provided");
@@ -160,8 +166,8 @@ const FileUploader = () => {
         className={`mt-4 sm:mt-6 w-full max-w-xs sm:max-w-md md:max-w-lg py-3 bg-blue-500 flex 
           items-center justify-center hover:bg-blue-600 text-white font-semibold rounded-lg shadow
            transition duration-200 disabled:opacity-50 font-nunito ${
-          selectedFile ? "cursor-pointer" : "cursor-not-allowed"
-        }`}
+             selectedFile ? "cursor-pointer" : "cursor-not-allowed"
+           }`}
         id="file"
         onClick={uploadFile}
         disabled={!selectedFile || uploading}
@@ -177,7 +183,6 @@ const FileUploader = () => {
       </button>
       {link && (
         <div className="mt-4 sm:mt-6 flex items-center justify-between py-3 px-4 sm:px-6 md:px-8 bg-slate-400 rounded-lg w-full max-w-xs sm:max-w-md md:max-w-lg">
-         
           <PiLinkSimpleHorizontalDuotone
             size={18}
             className="mr-2 sm:mr-3"

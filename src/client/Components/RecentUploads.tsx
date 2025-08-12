@@ -8,25 +8,30 @@ interface FileMedtaData {
   link: string;
 }
 
-const RecentUploads = () => {
+interface RecentUploadProps {
+  refreshKey: number;
+}
+const RecentUploads = ({refreshKey}  : RecentUploadProps) => {
   const [recentuploads, setrecentUploads] = useState<FileMedtaData[]>([]);
-  const [error , setError] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const FetchUploads = async () => {
-        setError("")
-        try{
-            const response = await Axios.get("http://localhost:3001/recent-uploads");
-            setrecentUploads(response.data)
-        }
-        catch(error){
-         setError("Failed to Fetch recent Uploads")
-        }
-      
-
+      setError("");
+      try {
+        const response = await Axios.get(
+          "http://localhost:3001/recent-uploads"
+        );
+        setrecentUploads(response.data);
+      } catch (error) {
+        setError("Failed to Fetch recent Uploads");
+      }
     };
+     useEffect(() => {
     FetchUploads();
+  }, [refreshKey]);
   }, []);
+ 
 
   return (
     <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl px-4 sm:px-6 mt-8">
@@ -82,7 +87,7 @@ const RecentUploads = () => {
             </ul>
           </AnimatePresence>
         )}
-        {error && (<p>{error}</p>)}
+        {error && <p>{error}</p>}
       </motion.div>
     </div>
   );

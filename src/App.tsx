@@ -4,20 +4,21 @@ import "./App.css";
 import FileUploader from "./client/Pages/FileUploader";
 import Cards from "./client/Pages/Cards";
 import RecentUploads from "./client/Components/RecentUploads";
+import  { useState } from "react";
 
 
 
 
-function App() {
-  
+const App = () => {
+  const [refreshKey , setRefreshKey] = useState<number>(0)
+  const [hasUploaded , setHasUploaded] = useState<boolean>(false)
   return (
-    <>
-      
-      <FileUploader />
+    <div>
+        <FileUploader setHasUploaded={setHasUploaded} setRefreshKey={setRefreshKey} />
       <Cards />
-      <RecentUploads/>
+       {hasUploaded && <RecentUploads refreshKey={refreshKey} />}
      
-    </>
+    </div>
   );
 }
 
