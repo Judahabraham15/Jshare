@@ -6,6 +6,7 @@ import Axios, { AxiosError } from "axios";
 import { FiCheckCircle, FiCopy, FiX } from "react-icons/fi";
 import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
 import { IoMdImages } from "react-icons/io";
+import { toast } from "react-toastify";
 
 interface FileUploaderProps {
   setHasUploaded: (hasUploaded: boolean) => void;
@@ -13,24 +14,27 @@ interface FileUploaderProps {
 }
 const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showPopup, setshowPopup] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
-  const [status, setStatus] = useState<fileStatus>("idle");
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [link, setLink] = useState<string>("");
-  const [copied, setCopied] = useState<boolean>(false);
 
-  type fileStatus = "idle" | "Successful" | "Failed";
 
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(link);
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 3000);
+              toast.success("✅ Link Copied to Clipboard" , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
     } catch (error) {
-      setErrorMessage("❌ Failed to copy link.");
+      toast.error(" ❌ Failed to copy Link." , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
+        console.log(error)
     }
   };
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,10 +50,13 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
       return;
     }
     if (selectedFile.size > MAX_TOTAL_SIZE) {
-      setshowPopup(true);
-      setTimeout(() => {
-        setshowPopup(false);
-      }, 3000);
+      toast.error("🚫 File exceeds the maximum size limit (100MB).", {
+        icon: false,
+        position: "top-right",
+        autoClose: 3000,
+        className:
+          " text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      });
 
       setSelectedFile(null);
       return;
@@ -70,22 +77,28 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         }
       );
       if (response.status === 200) {
-        setStatus("Successful");
+        toast.success("✅ File Uploaded Successfully" , {
+          icon:false,
+          position: 'top-right',
+          autoClose: 3000,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
         setLink(response.data.link || "No Link Provided!");
         setHasUploaded(true);
         setRefreshKey((prev) => prev + 1);
         setTimeout(() => {
-          setStatus("idle");
           console.log(response.data.link || "No link provided");
         }, 3000);
         console.log("Upload successful:", response.data);
       } else {
-        setStatus("Failed");
+        toast.error(" ❌ Upload failed. Please try again." , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
         setLink("");
-        setErrorMessage(" ❌ Upload failed. Please try again.");
-        setTimeout(() => {
-          setStatus("idle");
-        }, 3000);
+       
         console.error(
           "Upload Failed: Server responded with status",
           response.status
@@ -93,22 +106,37 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
       }
       setSelectedFile(null);
     } catch (error) {
-      setStatus("Failed");
+      
       const axiosError = error as AxiosError;
       if (axiosError.code === "ERR_NETWORK") {
-        setErrorMessage(
-          "❌ No internet connection. Please check your network."
-        );
+          toast.error(" ❌ No internet connection. Please check your network." , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
       } else if (axiosError.response?.status === 413) {
-        setErrorMessage("❌ File too large for the server.");
+          toast.error("❌ File too large for the server." , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
       } else if (axiosError.response?.status === 400) {
-        setErrorMessage("❌ Invalid file format.");
+          toast.error(" ❌ Invalid File Format." , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
       } else {
-        setErrorMessage("❌ Upload failed. Something went wrong!");
+          toast.error(" ❌ Upload failed. Something Went Wrong." , {
+          autoClose: 3000 , 
+          position: 'top-right' , 
+          icon: false,
+          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+        })
       }
-      setTimeout(() => {
-        setStatus("idle");
-      }, 3000);
       console.error("Upload Failed:", error);
     } finally {
       setUploading(false);
@@ -219,10 +247,10 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           <h1 className="text-white font-nunito font-semibold text-lg sm:text-xl self-start">
             Selected File
           </h1>
-          <div className="bg-[#0f172a] flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 rounded-lg mt-3 sm:mt-4 w-full">
-            <div className="flex items-center gap-3 sm:gap-5">
-              <IoMdImages size={20} className="text-blue-400" />
-              <div className="flex flex-col">
+          <div className="bg-[#0f172a] flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 rounded-lg mt-3 sm:mt-4 w-full ">
+            <div className="flex items-center truncate gap-3 sm:gap-5">
+              <IoMdImages size={25} className="text-blue-400" />
+              <div className="flex flex-col overflow-hidden">
                 <p className="text-white text-base sm:text-lg font-medium truncate">
                   {selectedFile.name}
                 </p>
@@ -238,82 +266,8 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         </motion.div>
       )}
       <AnimatePresence>
-        {showPopup && (
-          <motion.div
-            className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 bg-blue-600 bg-opacity-95 border border-blue-400 rounded-xl shadow-lg p-3 sm:p-5 flex items-center justify-center max-w-[90%] sm:max-w-md"
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -20 }}
-            transition={{
-              duration: 0.3,
-              ease: "easeOut",
-              type: "spring",
-              stiffness: 120,
-              damping: 20,
-            }}
-          >
-            <p className="text-white font-nunito font-semibold text-sm sm:text-base">
-              🚫 File exceeds the maximum size limit (100MB).
-            </p>
-          </motion.div>
-        )}
-        {status === "Successful" && (
-          <motion.div
-            className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 bg-blue-600 bg-opacity-95 border border-blue-400 rounded-xl shadow-lg p-3 sm:p-5 flex items-center justify-center max-w-[90%] sm:max-w-md"
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -20 }}
-            transition={{
-              duration: 0.3,
-              ease: "easeOut",
-              type: "spring",
-              stiffness: 120,
-              damping: 20,
-            }}
-          >
-            <p className="text-white font-semibold font-nunito text-sm sm:text-base">
-              ✅ File Uploaded Successfully
-            </p>
-          </motion.div>
-        )}
-        {status === "Failed" && (
-          <motion.div
-            className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 bg-blue-600 bg-opacity-95 border border-blue-400 rounded-xl shadow-lg p-3 sm:p-5 flex items-center justify-center max-w-[90%] sm:max-w-md"
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -20 }}
-            transition={{
-              duration: 0.3,
-              ease: "easeOut",
-              type: "spring",
-              stiffness: 120,
-              damping: 20,
-            }}
-          >
-            <p className="text-white font-semibold font-nunito text-center text-sm sm:text-base">
-              {errorMessage}
-            </p>
-          </motion.div>
-        )}
-        {copied && (
-          <motion.div
-            className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 bg-blue-600 bg-opacity-95 border border-blue-400 rounded-xl shadow-lg p-3 sm:p-5 flex items-center justify-center max-w-[90%] sm:max-w-md"
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -20 }}
-            transition={{
-              duration: 0.3,
-              ease: "easeOut",
-              type: "spring",
-              stiffness: 120,
-              damping: 20,
-            }}
-          >
-            <p className="text-white font-semibold font-nunito text-sm sm:text-base">
-              ✅ Link Copied to Clipboard
-            </p>
-          </motion.div>
-        )}
+
+       
       </AnimatePresence>
     </div>
   );
