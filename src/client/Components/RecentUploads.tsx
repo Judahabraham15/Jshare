@@ -1,18 +1,36 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { RiFolderVideoLine } from "react-icons/ri";
+import { FaFileWord, FaRegFilePdf } from "react-icons/fa6";
+import { IoImageOutline } from "react-icons/io5";
+import { CiFileOn } from "react-icons/ci";
 import Axios from "axios";
+import { FaFileAlt } from "react-icons/fa";
+import { BsTrash3 } from "react-icons/bs";
 
 interface FileMedtaData {
   originalname: string;
-  size: number;
   link: string;
+  type: string;
 }
 
 interface RecentUploadProps {
   refreshKey: number;
 }
-const RecentUploads = ({refreshKey}  : RecentUploadProps) => {
-  const [recentuploads, setrecentUploads] = useState<FileMedtaData[]>([]);
+
+const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
+  const [recentUploads, setrecentUploads] = useState<FileMedtaData[]>([
+    // Mock data for styling
+    {
+      originalname: "sample.pdf",
+      link: "http://localhost:3001/files/sample.pdf",
+      type: "pdf",
+    },
+    {
+      originalname: "image.jpg",
+      link: "http://localhost:3001/files/image.jpg",
+      type: "jpg",
+    },
+  ]);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -20,75 +38,82 @@ const RecentUploads = ({refreshKey}  : RecentUploadProps) => {
       setError("");
       try {
         const response = await Axios.get(
-          "http://localhost:3001/recent-uploads"
+          "http://localhost:3001/recent-Uploads"
         );
         setrecentUploads(response.data);
       } catch (error) {
         setError("Failed to Fetch recent Uploads");
       }
     };
-     useEffect(() => {
-    FetchUploads();
+    // Comment out to use mock data
+    // FetchUploads();
   }, [refreshKey]);
-  }, []);
- 
+
+  const FileIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "jpg":
+      case "jpeg":
+      case "png":
+      case "gif":
+        return <IoImageOutline size={20} className="text-blue-400" />;
+      case "pdf":
+        return <FaRegFilePdf size={20} className="text-blue-400" />;
+      case "mp4":
+        return <RiFolderVideoLine size={20} className="text-blue-400" />;
+      case "doc":
+        return <FaFileWord size={20} className="text-blue-400" />;
+      case "docx":
+        return <FaFileWord size={20} className="text-blue-400" />;
+      case "txt":
+        return <FaFileAlt size={20} className="text-blue-400" />;
+      default:
+        return <CiFileOn size={20} className="text-blue-400" />;
+    }
+  };
 
   return (
-    <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl px-4 sm:px-6 mt-8">
-      <h1 className="text-white font-nunito font-semibold text-lg sm:text-xl mb-4">
-        Recent Uploads
+    <div className="w-full flex flex-col items-center justify-center   px-4 sm:px-6 mt-10">
+      <h1 className=" text-white font-nunito font-bold text-2xl sm:text-xl mb-4">
+        Recent <span className="text-blue-500">Uploads</span>
       </h1>
-      <motion.div
-        className="min-h-[8rem] sm:min-h-[9rem] flex flex-col items-center justify-start px-4 sm:px-6 pt-4 sm:pt-6 pb-6 bg-[#1e293b] rounded-lg"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 0.3,
-          ease: "easeOut",
-          type: "spring",
-          stiffness: 120,
-          damping: 20,
-        }}
-      >
-        {recentuploads.length === 0 ? (
-          <p className="text-slate-400 font-nunito text-base sm:text-lg">
-            No recent uploads
-          </p>
-        ) : (
-          <AnimatePresence>
-            <ul className="w-full space-y-3">
-              {recentuploads.map(({ originalname, size, link }, idx) => (
-                <motion.li
-                  key={idx}
-                  className="bg-[#0f172a] flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 rounded-lg transition duration-200 hover:bg-[#1e293b]"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  <div className="flex items-center gap-3 sm:gap-5">
-                    <p className="text-white font-nunito font-medium text-base sm:text-lg truncate max-w-[200px] sm:max-w-[300px]">
-                      {originalname}
-                    </p>
-                    <p className="text-slate-400 font-nunito text-sm sm:text-[15px]">
-                      {(size / (1024 * 1024)).toFixed(2)} MB
-                    </p>
-                  </div>
-                  <a
-                    href={link}
-                    className="text-blue-400 font-nunito text-sm sm:text-base underline hover:text-blue-500 transition duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Download
-                  </a>
-                </motion.li>
-              ))}
-            </ul>
-          </AnimatePresence>
-        )}
-        {error && <p>{error}</p>}
-      </motion.div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 md:gap-8 w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-7xl">
+        {recentUploads.map(({ originalname,  link, type }, idx) => (
+          <div
+            className="bg-[#181c2f] border rounded-xl shadow-lg px-5 p-4 sm:p-6 md:p-8 flex flex-col items-start transition-transform hover:scale-105 hover:shadow-xl"
+            style={{ borderColor: "rgba(59, 130, 246, 0.40)" }}
+            key={idx}
+          >
+            <span
+              className="mb-2 sm:mb-3 border border-blue-500 p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+              style={{ background: "rgba(59, 130, 246, 0.15)" }}
+            >
+              {FileIcon(type)}
+            </span>
+            <p className="text-white font-nunito font-bold text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2">
+              {originalname.charAt(0).toUpperCase() + originalname.slice(1)}
+            </p>
+            
+            <p className="text-slate-400 font-nunito  text-sm sm:text-base md:text-lg text-left truncate max-w-full">
+              {link}
+            </p>
+            <div className="flex flex-row gap-3 mt-3">
+              <button
+                className="mb-2 sm:mb-3 bg-white p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+              >
+                <BsTrash3 className="text-red-400" />
+              </button>
+               <button
+                className="mb-2 sm:mb-3 bg-white p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+              >
+                <BsTrash3 className="text-red-400" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      {error && (
+        <p className="text-red-400 font-nunito text-base mt-4">{error}</p>
+      )}
     </div>
   );
 };

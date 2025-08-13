@@ -13,12 +13,12 @@ const App = () => {
   const [refreshKey , setRefreshKey] = useState<number>(0)
   const [hasUploaded , setHasUploaded] = useState<boolean>(false)
   return (
-    <div>
-        <FileUploader setHasUploaded={setHasUploaded} setRefreshKey={setRefreshKey} />
-      <Cards />
-       {hasUploaded && <RecentUploads refreshKey={refreshKey} />}
-     
+       <div className="flex flex-col items-center min-h-screen px-4 bg-[#0f172a]">
+      <FileUploader setHasUploaded={setHasUploaded} setRefreshKey={setRefreshKey} />
+      <Cards/>
+      <RecentUploads refreshKey={refreshKey} />
     </div>
+
   );
 }
 

@@ -50,18 +50,20 @@ const DownloadPage = () => {
         `http://localhost:3001/files/${encodeURIComponent(
           fileInfo.storedFilename
         )}`,
-        { responseType: "blob" } // <<-- important: tell Axios we want binary data
+        { responseType: "blob" } //* <<-- important: tell Axios we want binary data
       );
 
-      // Create a download link from the received blob and click it
+      //* Create a download link from the received blob and click it
+
+      //* NOT GONNA LIE AI DID THIS 😅
       const url = window.URL.createObjectURL(response.data);
       const a = document.createElement("a");
       a.href = url;
-      a.download = fileInfo.name; // force the filename when saving
+      a.download = fileInfo.name; //? force the filename when saving
       document.body.appendChild(a);
       a.click();
       a.remove();
-      window.URL.revokeObjectURL(url); // cleanup
+      window.URL.revokeObjectURL(url); // *cleanup
     } catch (err) {
       console.error("Error downloading file:", err);
     }
