@@ -49,15 +49,16 @@ app.post("/upload", Uploads.single("file"), (req, res) => {
       return res.status(400).json({ error: "No Files Uploaded" });
     }
 
-     //* Save original name & metadata in memory keyed by the stored filename
+    //* Save original name & metadata in memory keyed by the stored filename
     fileMetadata[req.file.filename] = {
       originalName: req.file.originalname,
       size: req.file.size,
-      type: path.extname(req.file.originalname).toLowerCase().replace(".", "") || "unknown",
+      type:
+        path.extname(req.file.originalname).toLowerCase().replace(".", "") ||
+        "unknown",
     };
 
     const fileLink = {
-      
       originalName: req.file.originalname,
       link: `http://localhost:3001/files/${req.file.filename}`,
       filename: req.file.filename,
@@ -79,7 +80,7 @@ app.post("/upload", Uploads.single("file"), (req, res) => {
 app.get("/file-info/:filename", (req, res) => {
   try {
     const filenameParam = req.params.filename;
-    const safeFilename = path.basename(filenameParam)
+    const safeFilename = path.basename(filenameParam);
     const filePath = path.join(uploadDir, safeFilename);
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: "File not found" });
@@ -87,13 +88,16 @@ app.get("/file-info/:filename", (req, res) => {
     const stats = fs.statSync(filePath);
 
     //* Simple way to get file type from extension
-    
-    const meta = fileMetadata[safeFilename]
+
+    const meta = fileMetadata[safeFilename];
     res.status(200).json({
       name: meta ? meta.originalName : safeFilename,
-      storedFilename: safeFilename,  //* This is to send the real filename saved
+      storedFilename: safeFilename, //* This is to send the real filename saved
       size: stats.size,
-      type: meta ? meta.type : path.extname(safeFilename).toLowerCase().replace(".", "") || "unknown",
+      type: meta
+        ? meta.type
+        : path.extname(safeFilename).toLowerCase().replace(".", "") ||
+          "unknown",
     });
   } catch (error) {
     console.error("file-info error:", error);
@@ -101,6 +105,29 @@ app.get("/file-info/:filename", (req, res) => {
   }
 });
 
+app.get("/recent-Uploads", (req, res) => {
+  //* Yo this is to get the recent-uploads info to display them.
+  try {
+    const uploads = Object.entries(fileMetadata).map(([filename, meta]) => ({
+      originalname: meta.originalName || filename,
+      link: `http://localhost:3001/files/${filename}`,
+      type: meta.type || 'unknown',
+    }));
+    console.log("Fetched Recent Uploads:", uploads);
+    res.status(200).json(uploads);
+  } catch (error) {
+    console.error("recent-Uploads error:", error);
+    res.status(500).json({ error: "Failed to fetch recent uploads" });
+  }
+});
+app.delete("/file-info/:filename", async (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename);
+    if (!fileMetadata[filename]) {
+      return res.status(404).json({ error: "File not Found" });
+    }
+  } catch (error) {}
+});
 app.get("/", (req, res) => {
   res.send("Server is running!");
 });
