@@ -21,18 +21,7 @@ interface RecentUploadProps {
 }
 
 const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
-  const [recentUploads, setrecentUploads] = useState<FileMedtaData[]>([
-    {
-      originalname: "sample.pdf",
-      link: "http://localhost:3001/files/sample.pdf",
-      type: "pdf",
-    },
-    {
-      originalname: "image.jpg",
-      link: "http://localhost:3001/files/image.jpg",
-      type: "jpg",
-    },
-  ]);
+  const [recentUploads, setrecentUploads] = useState<FileMedtaData[]>([]);
 
   useEffect(() => {
     const FetchUploads = async () => {
@@ -42,16 +31,17 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
         );
         setrecentUploads(response.data);
       } catch (error) {
-         toast.error("❌ Failed to Fetch Recent Uploads", {
-          position: "top-right",
-          autoClose: 3000,
-         
-          //* progressStyle: { background: "rgba(59, 130, 246, 0.4)" },
-        });
+        //! toast.error("❌ Failed to Fetch Recent Uploads", {
+        //!   position: "top-right",
+        //!   autoClose: 3000,
+        //!   icon: false,
+        //!   className:
+        //!     " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        //! });
       }
     };
-    // Comment out to use mock data
-    // FetchUploads();
+
+    FetchUploads();
   }, [refreshKey]);
 
   const FileIcon = (type: string) => {
@@ -78,27 +68,50 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
   const copyLink = async (link: string) => {
     try {
       await navigator.clipboard.writeText(link);
-      toast.success(" Link Copied to Clipboard" , {
-        position: 'top-right',
+      toast.success(" Link Copied to Clipboard", {
+        position: "top-right",
         autoClose: 3000,
-        icon: <FaCheckCircle size={20} className="text-green-500"style={{verticalAlign: 'middle'}}/>,
+        icon: (
+          <FaCheckCircle
+            size={20}
+            className="text-green-500"
+            style={{ verticalAlign: "middle" }}
+          />
+        ),
         className:
-          " text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-      // progressStyle: { background: "rgba(59, 130, 246, 0.4)" },
-      })
+          " text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        // progressStyle: { background: "rgba(59, 130, 246, 0.4)" },
+      });
     } catch (error) {
-      toast.error(" Failed to copy link." , {
+      toast.error(" Failed to copy link.", {
         autoClose: 3000,
-        position:'top-right',
+        position: "top-right",
         className:
-          " text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-      })
+          " text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      });
     }
   };
-  // const ExternalLink = () => { 
-  //    const a = document.createElement('a')
-  //    a.href = {`/download/ ${link.split("/files/")[1]}`}
-  //  }
+  const deleteFile = async (filename: string, idx: number) => {
+    try {
+      await Axios.delete(`http://localhost:3001/files/${filename}`);
+      setrecentUploads((prev) => prev.filter((_, index) => index !== idx));
+      toast.success("🗑️ File deleted successfully", {
+        icon: false,
+        position: "top-right",
+        autoClose: 3000,
+        className:
+          " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      });
+    } catch (error) {
+      toast.error("❌ Failed to delete file.", {
+        icon: false,
+        position: "top-right",
+        autoClose: 3000,
+        className:
+          "text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      });
+    }
+  };
 
   return (
     <div className="w-full flex flex-col items-center justify-center   px-4 sm:px-6 mt-10">
@@ -128,12 +141,12 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
             <div className="flex flex-row gap-3 mt-3">
               <a href={`/download/${link.split("/files/")[1]}`}>
                 <button
-                className=" cursor-pointer mb-2 sm:mb-3 b p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
-                style={{ background: "rgba(59, 130, 247, 0.15)" }}
-                // onClick={externalLink}
-              >
-                <FiExternalLink size={20} className="text-blue-400" />
-              </button>
+                  className=" cursor-pointer mb-2 sm:mb-3 b p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+                  style={{ background: "rgba(59, 130, 247, 0.15)" }}
+                  // onClick={externalLink}
+                >
+                  <FiExternalLink size={20} className="text-blue-400" />
+                </button>
               </a>
 
               <button
@@ -143,7 +156,10 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
               >
                 <FiCopy size={20} className="text-blue-400" />
               </button>
-              <button className=" cursor-pointer mb-2 sm:mb-3 bg-white p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13">
+              <button
+                onClick={() => deleteFile(originalname, idx)}
+                className=" cursor-pointer mb-2 sm:mb-3 bg-white p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+              >
                 <BsTrash3 className="text-red-400" />
               </button>
             </div>

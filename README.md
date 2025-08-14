@@ -1,5 +1,5 @@
-# 🌐 Jshare
-Upload. Share. Done.
+# 🌐 Jshare-From You to Anywhere In Seconds.
+
 
 
 

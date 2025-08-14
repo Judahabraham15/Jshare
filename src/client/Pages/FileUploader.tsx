@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Axios, { AxiosError } from "axios";
 import { FiCheckCircle, FiCopy, FiX } from "react-icons/fi";
 import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
-import { IoMdImages } from "react-icons/io";
 import { toast } from "react-toastify";
+import { CiFileOn } from "react-icons/ci";
 
 interface FileUploaderProps {
   setHasUploaded: (hasUploaded: boolean) => void;
@@ -25,16 +25,16 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
     } catch (error) {
       toast.error(" ❌ Failed to copy Link." , {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
-        console.log(error)
+       
     }
   };
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +55,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         position: "top-right",
         autoClose: 3000,
         className:
-          " text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+          " text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
       });
 
       setSelectedFile(null);
@@ -81,7 +81,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           icon:false,
           position: 'top-right',
           autoClose: 3000,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
         setLink(response.data.link || "No Link Provided!");
         setHasUploaded(true);
@@ -95,7 +95,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
         setLink("");
        
@@ -113,28 +113,28 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
       } else if (axiosError.response?.status === 413) {
           toast.error("❌ File too large for the server." , {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
       } else if (axiosError.response?.status === 400) {
           toast.error(" ❌ Invalid File Format." , {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
       } else {
           toast.error(" ❌ Upload failed. Something Went Wrong." , {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
-          className:"text-white font-nunito text-sm  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
+          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
       }
       console.error("Upload Failed:", error);
@@ -249,7 +249,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           </h1>
           <div className="bg-[#0f172a] flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 rounded-lg mt-3 sm:mt-4 w-full ">
             <div className="flex items-center truncate gap-3 sm:gap-5">
-              <IoMdImages size={25} className="text-blue-400" />
+              <CiFileOn size={25} className="text-blue-400" />
               <div className="flex flex-col overflow-hidden">
                 <p className="text-white text-base sm:text-lg font-medium truncate">
                   {selectedFile.name}

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {  FiDownload } from "react-icons/fi";
 
 import { HiArrowLeftStartOnRectangle } from "react-icons/hi2"
+import { toast } from "react-toastify";
 
 const DownloadPage = () => {
   interface FileInfo {
@@ -65,6 +66,12 @@ const DownloadPage = () => {
       a.remove();
       window.URL.revokeObjectURL(url); // *cleanup
     } catch (err) {
+      toast.error("Error Downlading file" ,{
+        autoClose:3000,
+        position: 'top-right',
+        className:
+          " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      })
       console.error("Error downloading file:", err);
     }
   };
