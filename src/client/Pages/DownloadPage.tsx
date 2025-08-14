@@ -114,7 +114,7 @@ const DownloadPage = () => {
             Congratulations!
           </h1>
              <motion.div
-              className="w-6.5 h-6.5 rounded-full sm:w-7 sm:h-7"
+              className="w-6.5 h-6.5 rounded-full sm:w-7 sm:h-7 sm:mt-1"
               animate={{
                 background: [
                   "linear-gradient(to bottom, #22c55e, #16a34a, #2563eb)",

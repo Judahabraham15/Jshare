@@ -4,6 +4,7 @@ const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const fsp = fs.promises; //! ← Promise API for await
 
 const uploadDir = path.join(__dirname, "UPLOADS"); //? <- absolute path
 if (!fs.existsSync(uploadDir)) {
@@ -25,8 +26,8 @@ app.use("/files", express.static(uploadDir));
 
 //* Multer configuration (save to the same absolute folder)
 const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, uploadDir);
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -58,12 +59,13 @@ app.post("/upload", Uploads.single("file"), (req, res) => {
         "unknown",
     };
 
-    const fileLink = {
+
+    res.status(200).json({
       originalName: req.file.originalname,
       link: `http://localhost:3001/files/${req.file.filename}`,
       filename: req.file.filename,
-    };
-    res.status(200).json(fileLink);
+    });
+   
   } catch (error) {
     console.error("Upload error:", error);
     if (error instanceof multer.MulterError) {
@@ -109,24 +111,38 @@ app.get("/recent-Uploads", (req, res) => {
   //* Yo this is to get the recent-uploads info to display them.
   try {
     const uploads = Object.entries(fileMetadata).map(([filename, meta]) => ({
-      originalname: meta.originalName || filename,
+      originalname: meta.originalName || filename, //*Just the real name of the file uploaded
       link: `http://localhost:3001/files/${filename}`,
-      type: meta.type || 'unknown',
+      type: meta.type || "unknown",
+      filename,
     }));
-    console.log("Fetched Recent Uploads:", uploads);
     res.status(200).json(uploads);
   } catch (error) {
     console.error("recent-Uploads error:", error);
     res.status(500).json({ error: "Failed to fetch recent uploads" });
   }
 });
-app.delete("/file-info/:filename", async (req, res) => {
-  try {
-    const filename = path.basename(req.params.filename);
-    if (!fileMetadata[filename]) {
-      return res.status(404).json({ error: "File not Found" });
+//! FILE DELETION
+app.delete("/files/:filename", async (req, res) => {
+      const filename = path.basename(req.params.filename);
+      const filePath = path.join(uploadDir, filename);
+
+ try {
+    //* If metadata missing but file exists, still allow deletion.
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "File not found on disk" });
     }
-  } catch (error) {}
+
+    await fsp.unlink(filePath); //! ← Promise API
+
+    //* Clean metadata if present
+    if (fileMetadata[filename]) delete fileMetadata[filename];
+
+    res.status(200).json({ message: "File deleted successfully" });
+  } catch (error) {
+    console.error("Delete File error:", error);
+    res.status(500).json({ error: "Failed to delete File" });
+  }
 });
 app.get("/", (req, res) => {
   res.send("Server is running!");
@@ -136,3 +152,4 @@ const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
