@@ -2,67 +2,52 @@
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
-const path = require("path");
-const fs = require("fs");
-const fsp = fs.promises; //! ← Promise API for await
-
-const uploadDir = path.join(__dirname, "UPLOADS"); //? <- absolute path
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+const ImageKit = require("imagekit");
+require("dotenv").config();
 
 const app = express();
 
+const imageKit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+});
+
+//!FUCK THIS WE ARENT USING IT NO MORE!
 //? Simple in-memory metadata store:
 //? key = storedFilename (what multer saves), value = { originalName, size, type }
-const fileMetadata = {};
+// const fileMetadata = {};
 
 //* Middleware
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-//* Serve uploaded files (use the same absolute folder)
-app.use("/files", express.static(uploadDir));
-
-//* Multer configuration (save to the same absolute folder)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueName + path.extname(file.originalname)
-    );
-  },
-});
-
+//* Multer configuration (Store in memory)
+const storage = multer.memoryStorage({});
 const Uploads = multer({
   storage: storage,
   limits: { fileSize: 100 * 1024 * 1024 }, //* 100MB limit bro
 });
 
 //! UPLOAD ROUTE FOR SINGLE FILE
-app.post("/upload", Uploads.single("file"), (req, res) => {
+app.post("/upload", Uploads.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No Files Uploaded" });
     }
 
-    //* Save original name & metadata in memory keyed by the stored filename
-    fileMetadata[req.file.filename] = {
-      originalName: req.file.originalname,
-      size: req.file.size,
-      type:
-        path.extname(req.file.originalname).toLowerCase().replace(".", "") ||
-        "unknown",
-    };
+    const result = await imageKit.upload({
+      file: req.file.buffer,
+      fileName: req.file.originalname,
+      folder: "/jshare_Uploads",
+      tags: ["jshare"],
+    });
 
     res.status(200).json({
       originalName: req.file.originalname,
-      link: `http://localhost:3001/files/${req.file.filename}`,
-      filename: req.file.filename,
+      link: `http://localhost:3001/download/${result.fileId}`,
+      imageKitUrl: result.url,
+      filename: result.fileId,
     });
   } catch (error) {
     console.error("Upload error:", error);
@@ -77,27 +62,21 @@ app.post("/upload", Uploads.single("file"), (req, res) => {
 });
 
 //!Test Route
-app.get("/file-info/:filename", (req, res) => {
+app.get("/file-info/:fileId", async (req, res) => {
   try {
-    const filenameParam = req.params.filename;
-    const safeFilename = path.basename(filenameParam);
-    const filePath = path.join(uploadDir, safeFilename);
-    if (!fs.existsSync(filePath)) {
+    const fileId = req.params.fileId;
+    const file = await imageKit.getFileDetails(fileId);
+
+    if (!file) {
       return res.status(404).json({ error: "File not found" });
     }
-    const stats = fs.statSync(filePath);
 
-    //* Simple way to get file type from extension
-
-    const meta = fileMetadata[safeFilename];
     res.status(200).json({
-      name: meta ? meta.originalName : safeFilename,
-      storedFilename: safeFilename, //* This is to send the real filename saved
-      size: stats.size,
-      type: meta
-        ? meta.type
-        : path.extname(safeFilename).toLowerCase().replace(".", "") ||
-          "unknown",
+      name: file.name,
+      imageKitUrl: file.url,
+      storedFilename: file.fileId,
+      size: file.size,
+      type: file.fileType.split("/")[1] || "unknown",
     });
   } catch (error) {
     console.error("file-info error:", error);
@@ -105,36 +84,32 @@ app.get("/file-info/:filename", (req, res) => {
   }
 });
 
-app.get("/recent-Uploads", (req, res) => {
+app.get("/recent-Uploads", async (req, res) => {
   //* Yo this is to get the recent-uploads info to display them.
   try {
-    const uploads = Object.entries(fileMetadata).map(([filename, meta]) => ({
-      originalname: meta.originalName || filename, //*Just the real name of the file uploaded
-      link: `http://localhost:3001/files/${filename}`,
-      type: meta.type || "unknown",
-      filename,
-    }));
-    res.status(200).json(uploads);
+    const files = await imageKit.listFiles({
+      tags: ["jshare"],
+      sort: "DESC_CREATED",
+    });
+    res.status(200).json(
+      files.map((file) => ({
+        originalname: file.name,
+        imageKitUrl: file.url,
+        link: `http://localhost:3001/download/${file.fileId}`,
+        type: file.fileType.split("/")[1] || "unknown",
+        filename: file.fileId,
+      }))
+    );
   } catch (error) {
     console.error("recent-Uploads error:", error);
     res.status(500).json({ error: "Failed to fetch recent uploads" });
   }
 });
 //! FILE DELETION
-app.delete("/files/:filename", async (req, res) => {
-  const filename = path.basename(req.params.filename);
-  const filePath = path.join(uploadDir, filename);
-
+app.delete("/files/:fileId", async (req, res) => {
   try {
-    //* If metadata missing but file exists, still allow deletion.
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: "File not found on disk" });
-    }
-
-    await fsp.unlink(filePath); //! ← Promise API
-
-    //* Clean metadata if present
-    if (fileMetadata[filename]) delete fileMetadata[filename];
+    const fileId = req.params.fileId;
+    await imageKit.deleteFile(fileId)
 
     res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
