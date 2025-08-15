@@ -8,6 +8,7 @@ import { FaCheckCircle, FaFileAlt } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import { FiCopy, FiExternalLink } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 interface FileMetaData {
   originalname: string;
@@ -124,14 +125,17 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
 
             <div className="flex flex-row gap-3 mt-3">
               
-              <a href={`/download/${encodeURIComponent(filename)}`}>
+              <Link
+                to={link.replace("http://localhost:3001" , "")}
+              >
+             
                 <button
                   className="cursor-pointer mb-2 sm:mb-3 p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
                   style={{ background: "rgba(59, 130, 247, 0.15)" }}
                 >
                   <FiExternalLink size={20} className="text-blue-400" />
                 </button>
-              </a>
+             </Link>
 
               <button
                 className="cursor-pointer mb-2 sm:mb-3 p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"

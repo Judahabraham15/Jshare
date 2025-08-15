@@ -2,9 +2,9 @@ import Axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import {  FiDownload } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 
-import { HiArrowLeftStartOnRectangle } from "react-icons/hi2"
+import { HiArrowLeftStartOnRectangle } from "react-icons/hi2";
 import { toast } from "react-toastify";
 
 const DownloadPage = () => {
@@ -13,14 +13,15 @@ const DownloadPage = () => {
     size: number;
     type: string;
     storedFilename: string;
+    imageKitUrl: string;
   }
-  const { filename } = useParams<{ filename: string }>();
+  const { fileId } = useParams<{ fileId: string }>();
   const navigate = useNavigate();
   const [fileInfo, setfileInfo] = useState<FileInfo | null>(null);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    if (!filename) {
+    if (!fileId) {
       setError("Invalid filename");
       return;
     }
@@ -28,7 +29,7 @@ const DownloadPage = () => {
     const fetchInfo = async () => {
       try {
         const response = await Axios.get(
-          `http://localhost:3001/file-info/${encodeURIComponent(filename)}`
+          `http://localhost:3001/file-info/${encodeURIComponent(fileId)}`
         );
         setfileInfo(response.data);
       } catch (error: any) {
@@ -41,37 +42,29 @@ const DownloadPage = () => {
       }
     };
     fetchInfo();
-  }, [filename]);
+  }, [fileId]);
 
   const handleDownload = async () => {
-    if (!fileInfo) return;
+    if (!fileInfo?.imageKitUrl) return;
 
     try {
-      const response = await Axios.get(
-        `http://localhost:3001/files/${encodeURIComponent(
-          fileInfo.storedFilename
-        )}`,
-        { responseType: "blob" } //* <<-- important: tell Axios we want binary data
-      );
 
-      //* Create a download link from the received blob and click it
-
-      //* NOT GONNA LIE AI DID THIS 😅
-      const url = window.URL.createObjectURL(response.data);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileInfo.name; //? force the filename when saving
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url); // *cleanup
+      //* AI did this 
+       window.open(fileInfo.imageKitUrl , "_blank") //* ImageKit URL for downloads
+       toast.success("✅ Download Started" , {
+        icon: false,
+        autoClose: 3000,
+        position:'top-right',
+         className:
+          " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+       })
     } catch (err) {
-      toast.error("Error Downlading file" ,{
-        autoClose:3000,
-        position: 'top-right',
+      toast.error("❌ Error Downlading file", {
+        autoClose: 3000,
+        position: "top-right",
         className:
           " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
-      })
+      });
       console.error("Error downloading file:", err);
     }
   };
@@ -99,29 +92,29 @@ const DownloadPage = () => {
 
   return (
     <div className="flex items-center justify-center p-6 flex-col mt-30 ">
-      
       <div className="space-y-10 max-w-md w-full">
-        <div
-          className="flex flex-row"
-          onClick={() => navigate("/")}
-        >
-          <HiArrowLeftStartOnRectangle className="text-slate-400 mr-1 cursor-pointer" style={{ verticalAlign: "middle" }} size={20} />
+        <div className="flex flex-row" onClick={() => navigate("/")}>
+          <HiArrowLeftStartOnRectangle
+            className="text-slate-400 mr-1 cursor-pointer"
+            style={{ verticalAlign: "middle" }}
+            size={20}
+          />
           <p className="text-slate-400 cursor-pointer">Return Home</p>
         </div>
         <div className="w-full rounded-xl border border-blue-500 bg-[#0c1221d9] py-6 px-4 shadow-xl shadow-blue-500/25">
-        <div className="flex flex-row ">
-          <h1 className="text-white font-nunito text-2xl font-semibold mr-2 sm:text-3xl">
-            Congratulations!
-          </h1>
-             <motion.div
+          <div className="flex flex-row ">
+            <h1 className="text-white font-nunito text-2xl font-semibold mr-2 sm:text-3xl">
+              Congratulations!
+            </h1>
+            <motion.div
               className="w-6.5 h-6.5 rounded-full sm:w-7 sm:h-7 sm:mt-1"
               animate={{
                 background: [
                   "linear-gradient(to bottom, #22c55e, #16a34a, #2563eb)",
                   "linear-gradient(to bottom, #ec4899, #f97316, #f59e0b)",
                   "linear-gradient(to bottom, #06b6d4, #3b82f6, #8b5cf6)",
-                  "linear-gradient(to bottom, #8b5cf6, #ec4899, #f97316)",                  
-                  "linear-gradient(to bottom, #000, #fff, #000)",                  
+                  "linear-gradient(to bottom, #8b5cf6, #ec4899, #f97316)",
+                  "linear-gradient(to bottom, #000, #fff, #000)",
                 ],
               }}
               transition={{
@@ -130,12 +123,11 @@ const DownloadPage = () => {
                 repeatType: "mirror",
               }}
             />
-        </div>
-            <p className="text-white text-sm mr-2 mt-2">
-              You have Successfully Uploaded Your File 🚀
-            </p>
-         
-         
+          </div>
+          <p className="text-white text-sm mr-2 mt-2">
+            You have Successfully Uploaded Your File 🚀
+          </p>
+
           <div className="flex items-center justify-center font-nunito mt-10">
             <div
               className=" flex items-center justify-center w-20 h-20 bg-gradient-to-b

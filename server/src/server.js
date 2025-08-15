@@ -18,7 +18,7 @@ const app = express();
 const fileMetadata = {};
 
 //* Middleware
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 //* Serve uploaded files (use the same absolute folder)
@@ -59,13 +59,11 @@ app.post("/upload", Uploads.single("file"), (req, res) => {
         "unknown",
     };
 
-
     res.status(200).json({
       originalName: req.file.originalname,
       link: `http://localhost:3001/files/${req.file.filename}`,
       filename: req.file.filename,
     });
-   
   } catch (error) {
     console.error("Upload error:", error);
     if (error instanceof multer.MulterError) {
@@ -124,10 +122,10 @@ app.get("/recent-Uploads", (req, res) => {
 });
 //! FILE DELETION
 app.delete("/files/:filename", async (req, res) => {
-      const filename = path.basename(req.params.filename);
-      const filePath = path.join(uploadDir, filename);
+  const filename = path.basename(req.params.filename);
+  const filePath = path.join(uploadDir, filename);
 
- try {
+  try {
     //* If metadata missing but file exists, still allow deletion.
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: "File not found on disk" });
@@ -152,4 +150,3 @@ const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

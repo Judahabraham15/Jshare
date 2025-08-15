@@ -7,6 +7,7 @@ import { FiCheckCircle, FiCopy, FiX } from "react-icons/fi";
 import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
 import { toast } from "react-toastify";
 import { CiFileOn } from "react-icons/ci";
+import { Link } from "react-router-dom";
 
 interface FileUploaderProps {
   setHasUploaded: (hasUploaded: boolean) => void;
@@ -86,9 +87,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         setLink(response.data.link || "No Link Provided!");
         setHasUploaded(true);
         setRefreshKey((prev) => prev + 1);
-        setTimeout(() => {
-          console.log(response.data.link || "No link provided");
-        }, 3000);
+         console.log( response.data.link || "No Link Proide") 
         console.log("Upload successful:", response.data);
       } else {
         toast.error(" ❌ Upload failed. Please try again." , {
@@ -216,12 +215,16 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
             className="mr-2 sm:mr-3"
             style={{ verticalAlign: "middle" }}
           />
-          <a
-            href={`/download/${link.split("/files/")[1]}`}
-            className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
+          <Link
+           to={link.replace("http://localhost:3001" , "")}
+           className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
           >
-            File Link: {link}
-          </a>
+          File Link: {link}
+          </Link>
+            
+
+            
+       
           <button onClick={copyLink}>
             <FiCopy
               size={18}
