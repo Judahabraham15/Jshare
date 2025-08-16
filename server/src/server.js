@@ -26,7 +26,7 @@ app.use(express.json());
 const storage = multer.memoryStorage({});
 const Uploads = multer({
   storage: storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, //* 100MB limit bro
+  limits: { fileSize: 100 * 1024 * 1024 }, //* 100MB limit bro 
 });
 
 //! UPLOAD ROUTE FOR SINGLE FILE
@@ -66,17 +66,28 @@ app.get("/file-info/:fileId", async (req, res) => {
   try {
     const fileId = req.params.fileId;
     const file = await imageKit.getFileDetails(fileId);
-
+    // console.log(file)
     if (!file) {
       return res.status(404).json({ error: "File not found" });
     }
+    //TODO: FIX THE FILE TYPE: Just need to get the Filetype
+    // Prefer real extension from name, then fall back to MIME suffix, then a sane label
+    const ext =
+      file.name && file.name.includes(".")
+        ? file.name.split(".").pop().toLowerCase()
+        : "";
+    const mimeSuffix = file.mime ? file.mime.split("/").pop() : "";
+    const type =
+      ext || mimeSuffix || (file.fileType === "image" ? "image" : "file");
 
     res.status(200).json({
       name: file.name,
       imageKitUrl: file.url,
       storedFilename: file.fileId,
       size: file.size,
-      type: file.fileType.split("/")[1] || "unknown",
+      type,
+      //! type: file.fileType.split("/")[1] || "unknown", //! This dosent work bro cause
+      // !Imagekit dosent returns e.g (image) instead of (image.jpg)
     });
   } catch (error) {
     console.error("file-info error:", error);
@@ -91,15 +102,24 @@ app.get("/recent-Uploads", async (req, res) => {
       tags: ["jshare"],
       sort: "DESC_CREATED",
     });
-    res.status(200).json(
-      files.map((file) => ({
-        originalname: file.name,
-        imageKitUrl: file.url,
-        link: `http://localhost:3001/download/${file.fileId}`,
-        type: file.fileType.split("/")[1] || "unknown",
-        filename: file.fileId,
-      }))
-    );
+    const shaped = files.map((f) => {
+      const ext =
+        f.name && f.name.includes(".")
+          ? f.name.split(".").pop().toLowerCase()
+          : "";
+      const mimeSuffix = f.mime ? f.mime.split("/").pop() : "";
+      const type =
+        ext || mimeSuffix || (f.fileType === "image" ? "image" : "file");
+
+      return {
+        originalname: f.name,
+        imageKitUrl: f.url,
+        link: `http://localhost:3001/download/${f.fileId}`,
+        type,
+        filename: f.fileId,
+      };
+    });
+    res.status(200).json(shaped);
   } catch (error) {
     console.error("recent-Uploads error:", error);
     res.status(500).json({ error: "Failed to fetch recent uploads" });
@@ -109,7 +129,7 @@ app.get("/recent-Uploads", async (req, res) => {
 app.delete("/files/:fileId", async (req, res) => {
   try {
     const fileId = req.params.fileId;
-    await imageKit.deleteFile(fileId)
+    await imageKit.deleteFile(fileId);
 
     res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
