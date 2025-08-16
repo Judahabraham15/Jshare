@@ -4,9 +4,9 @@
 
 
 
-Jshare is a lightning-fast file-sharing platform that lets you upload files and instantly get a shareable link — no complicated steps, no waiting around.
+Jshare is a lightning-fast file-sharing platform that lets you upload files and instantly get a shareable link — no complicated steps, no waiting around.Just 3 clicks and then BOOM💥.
 
-Built with React, TypeScript, Node.js, Express.js, and Multer, Jshare is designed for speed, simplicity, and reliability.
+Built with React, TypeScript, Node.js, Express.js, and Multer, Jshare is designed for speed, simplicity, and reliability. And used ImageKit for File Storage.
 
 ✨ Features
 - ⚡ Instant Uploads — Upload files and get a shareable link in seconds.
