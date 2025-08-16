@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import Layout from "./client/Layout/Layout";
 import FileUploader from "./client/Pages/FileUploader";
@@ -10,7 +10,14 @@ import RecentUploads from "./client/Components/RecentUploads";
 
 const App = () => {
   const [refreshKey, setRefreshKey] = useState<number>(0);
-  const [hasUploaded, setHasUploaded] = useState<boolean>(false);
+  const [hasUploaded, setHasUploaded] = useState<boolean>(() => {
+    //* Load from localStorage on mount
+    return localStorage.getItem("hasUploaded") === "true";
+  });
+  useEffect(()=>{
+     // *Save hasUploaded to localStorage whenever it changes
+    localStorage.setItem("hasUploaded", hasUploaded.toString());
+  } , [hasUploaded])
 
   return (
     <>
@@ -25,7 +32,7 @@ const App = () => {
                   setRefreshKey={setRefreshKey}
                 />
                 <Cards />
-                {hasUploaded && <RecentUploads refreshKey={refreshKey} />}
+                <RecentUploads  refreshKey={refreshKey}  />
               </div>
             }
           />

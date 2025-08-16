@@ -20,6 +20,7 @@ const Footer = () => {
           <a
             href="https://portfolios-nu-two.vercel.app/"
             className="text-gray-400 hover:text-white transition"
+            target= "_blank"
           >
             <motion.span
              whileHover={{ rotate: 10, scale: 1.2 }}

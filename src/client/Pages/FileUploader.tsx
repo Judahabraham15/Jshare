@@ -22,7 +22,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(link);
-              toast.success("✅ Link Copied to Clipboard" , {
+           toast.success("✅ Link Copied to Clipboard" , {
           autoClose: 3000 , 
           position: 'top-right' , 
           icon: false,
@@ -86,6 +86,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         })
         setLink(response.data.link || "No Link Provided!");
         setHasUploaded(true);
+        localStorage.setItem("hasUploaded" , "true")//* Save to LocalStorage and sets it to true. Sense!!
         setRefreshKey((prev) => prev + 1);
          console.log( response.data.link || "No Link Proide") 
         console.log("Upload successful:", response.data);

@@ -44,30 +44,34 @@ const DownloadPage = () => {
     fetchInfo();
   }, [fileId]);
 
-  const handleDownload = async () => {
-    if (!fileInfo?.imageKitUrl) return;
+const handleDownload = async () => {
+  if (!fileInfo?.imageKitUrl) return;
 
-    try {
-
-      //* AI did this 
-       window.open(fileInfo.imageKitUrl , "_blank") //* ImageKit URL for downloads
-       toast.success("✅ Download Started" , {
-        icon: false,
-        autoClose: 3000,
-        position:'top-right',
-         className:
-          " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
-       })
-    } catch (err) {
-      toast.error("❌ Error Downlading file", {
-        autoClose: 3000,
-        position: "top-right",
-        className:
-          " text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
-      });
-      console.error("Error downloading file:", err);
-    }
-  };
+  try {
+    const link = document.createElement("a");
+    link.href = fileInfo.imageKitUrl;
+    link.download = fileInfo.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("✅ Download Started", {
+      icon: false,
+      autoClose: 3000,
+      position: "top-right",
+      className:
+        "text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+    });
+  } catch (err) {
+    toast.error("❌ Error downloading file", {
+      icon: false,
+      autoClose: 3000,
+      position: "top-right",
+      className:
+        "text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+    });
+    console.error("Error downloading file:", err);
+  }
+};
 
   if (error) {
     return (
@@ -138,7 +142,7 @@ const DownloadPage = () => {
               </h1>
             </div>
           </div>
-          <h1 className="text-gray-400 text-center font-bold mt-6 text-2xl w-full max-w-2xl">
+          <h1 className="truncate text-gray-400 text-center font-bold mt-6 text-2xl w-full max-w-2xl">
             {fileInfo.name}
           </h1>
           <div className="flex items-center justify-center">
