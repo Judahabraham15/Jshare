@@ -26,7 +26,7 @@ app.use(express.json());
 const storage = multer.memoryStorage({});
 const Uploads = multer({
   storage: storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, //* 100MB limit bro 
+  limits: { fileSize: 100 * 1024 * 1024 }, //* 100MB limit bro
 });
 
 //! UPLOAD ROUTE FOR SINGLE FILE
