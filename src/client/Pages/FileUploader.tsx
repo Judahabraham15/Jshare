@@ -18,24 +18,24 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [links, setLinks] = useState<string>("");
 
-
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(links);
-           toast.success("✅ Link Copied to Clipboard" , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
-          icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+      toast.success("✅ Link Copied to Clipboard", {
+        autoClose: 3000,
+        position: "top-right",
+        icon: false,
+        className:
+          "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      });
     } catch (error) {
-      toast.error(" ❌ Failed to copy Link." , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
-          icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
-       
+      toast.error(" ❌ Failed to copy Link.", {
+        autoClose: 3000,
+        position: "top-right",
+        icon: false,
+        className:
+          "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+      });
     }
   };
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,27 +78,29 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         }
       );
       if (response.status === 200) {
-        toast.success("✅ File Uploaded Successfully" , {
-          icon:false,
-          position: 'top-right',
+        toast.success("✅ File Uploaded Successfully", {
+          icon: false,
+          position: "top-right",
           autoClose: 3000,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+          className:
+            "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        });
         setLinks(response.data.link || "No Link Provided!");
         setHasUploaded(true);
-        localStorage.setItem("hasUploaded" , "true")//* Save to LocalStorage and sets it to true. Sense!!
+        localStorage.setItem("hasUploaded", "true"); //* Save to LocalStorage and sets it to true. Sense!!
         setRefreshKey((prev) => prev + 1);
-         console.log( response.data.link || "No Link Proide") 
+        console.log(response.data.link || "No Link Proide");
         console.log("Upload successful:", response.data);
       } else {
-        toast.error(" ❌ Upload failed. Please try again." , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
+        toast.error(" ❌ Upload failed. Please try again.", {
+          autoClose: 3000,
+          position: "top-right",
           icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+          className:
+            "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        });
         setLinks("");
-       
+
         console.error(
           "Upload Failed: Server responded with status",
           response.status
@@ -106,36 +108,39 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
       }
       setSelectedFile(null);
     } catch (error) {
-      
       const axiosError = error as AxiosError;
       if (axiosError.code === "ERR_NETWORK") {
-          toast.error(" ❌ No internet connection. Please check your network." , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
+        toast.error(" ❌ No internet connection. Please check your network.", {
+          autoClose: 3000,
+          position: "top-right",
           icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+          className:
+            "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        });
       } else if (axiosError.response?.status === 413) {
-          toast.error("❌ File too large for the server." , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
+        toast.error("❌ File too large for the server.", {
+          autoClose: 3000,
+          position: "top-right",
           icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+          className:
+            "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        });
       } else if (axiosError.response?.status === 400) {
-          toast.error(" ❌ Invalid File Format." , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
+        toast.error(" ❌ Invalid File Format.", {
+          autoClose: 3000,
+          position: "top-right",
           icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+          className:
+            "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        });
       } else {
-          toast.error(" ❌ Upload failed. Something Went Wrong." , {
-          autoClose: 3000 , 
-          position: 'top-right' , 
+        toast.error(" ❌ Upload failed. Something Went Wrong.", {
+          autoClose: 3000,
+          position: "top-right",
           icon: false,
-          className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
-        })
+          className:
+            "text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
+        });
       }
       console.error("Upload Failed:", error);
     } finally {
@@ -217,15 +222,16 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
             style={{ verticalAlign: "middle" }}
           />
           <Link
-           to={links.replace("http://localhost:3001" , "https://jshare-server.onrender.com")}
-           className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
+            to={`/download/${links.split("/").pop()}`} // Extracts fileId from the URL
+            className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
           >
-          File Link: {links}
+            File Link:{" "}
+            {links.replace(
+              "http://localhost:3001",
+              "https://jshare-server.onrender.com"
+            )}
           </Link>
-            
 
-            
-       
           <button onClick={copyLink}>
             <FiCopy
               size={18}
@@ -269,10 +275,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           </div>
         </motion.div>
       )}
-      <AnimatePresence>
-
-       
-      </AnimatePresence>
+      <AnimatePresence></AnimatePresence>
     </div>
   );
 };

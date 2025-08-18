@@ -6,7 +6,7 @@ const ImageKit = require("imagekit");
 require("dotenv").config();
 
 const app = express();
-
+ const baseUrl = process.env.BACKEND_URL || "https://jshare-server.onrender.com";
 const imageKit = new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
@@ -45,7 +45,7 @@ app.post("/upload", Uploads.single("file"), async (req, res) => {
 
     res.status(200).json({
       originalName: req.file.originalname,
-      link: `https://jshare-server.onrender.com/download/${result.fileId}`,
+      link: `${baseUrl}/download/${result.fileId}`,
       imageKitUrl: result.url,
       filename: result.fileId,
     });
@@ -114,7 +114,7 @@ app.get("/recent-Uploads", async (req, res) => {
       return {
         originalname: f.name,
         imageKitUrl: f.url,
-        link: `https://jshare-server.onrender.com/download/${f.fileId}`,
+        link: `${baseUrl}/download/${f.fileId}`,
         type,
         filename: f.fileId,
       };
