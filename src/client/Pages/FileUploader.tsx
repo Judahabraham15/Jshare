@@ -71,7 +71,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
     formData.append("file", selectedFile);
     try {
       const response = await Axios.post(
-        "http://localhost:3001/upload",
+        "https://jshare-server.onrender.com/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -217,7 +217,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
             style={{ verticalAlign: "middle" }}
           />
           <Link
-           to={link.replace("http://localhost:3001" , "")}
+           to={link.replace("http://localhost:3001" , "https://jshare-server.onrender.com")}
            className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
           >
           File Link: {link}

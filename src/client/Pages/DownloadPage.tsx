@@ -29,7 +29,7 @@ const DownloadPage = () => {
     const fetchInfo = async () => {
       try {
         const response = await Axios.get(
-          `http://localhost:3001/file-info/${encodeURIComponent(fileId)}`
+          `https://jshare-server.onrender.com/file-info/${encodeURIComponent(fileId)}`
         );
         setfileInfo(response.data);
       } catch (error: any) {
@@ -50,7 +50,7 @@ const handleDownload = async () => {
   try {
   
     const response = await Axios.get(
-      `http://localhost:3001/download/${encodeURIComponent(fileInfo.storedFilename)}`,
+      `https://jshare-server.onrender.com/download/${encodeURIComponent(fileInfo.storedFilename)}`,
       { responseType: "blob" } // <- tell Axios we want raw binary data
     );
 
