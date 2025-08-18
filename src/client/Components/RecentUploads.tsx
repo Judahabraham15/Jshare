@@ -8,7 +8,7 @@ import { FaCheckCircle, FaFileAlt } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import { FiCopy, FiExternalLink } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { Link, replace } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface FileMetaData {
   originalname: string;
