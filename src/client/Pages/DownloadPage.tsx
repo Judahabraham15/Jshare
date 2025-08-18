@@ -45,15 +45,32 @@ const DownloadPage = () => {
   }, [fileId]);
 
 const handleDownload = async () => {
-  if (!fileInfo?.imageKitUrl) return;
+  if (!fileInfo?.storedFilename || !fileInfo?.name) return;
 
   try {
+  
+    const response = await Axios.get(
+      `http://localhost:3001/download/${encodeURIComponent(fileInfo.storedFilename)}`,
+      { responseType: "blob" } // <- tell Axios we want raw binary data
+    );
+
+    //  Wrap those bytes in a Blob so the browser treats it like a real file
+    const blob = new Blob([response.data]); // 
+
+    //  Create a temporary URL that points to that in-memory file
+    const objectUrl = URL.createObjectURL(blob);
+
+ 
     const link = document.createElement("a");
-    link.href = fileInfo.imageKitUrl;
-    link.download = fileInfo.name;
+    link.href = objectUrl;
+    link.download = fileInfo.name; // filename shown in the "Save as…" dialog
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    //  Clean up that temporary URL (avoid memory leaks)
+    URL.revokeObjectURL(objectUrl);
+
     toast.success("✅ Download Started", {
       icon: false,
       autoClose: 3000,
@@ -62,6 +79,7 @@ const handleDownload = async () => {
         "text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
     });
   } catch (err) {
+    console.error("Error downloading file:", err);
     toast.error("❌ Error downloading file", {
       icon: false,
       autoClose: 3000,
@@ -69,9 +87,9 @@ const handleDownload = async () => {
       className:
         "text-white font-nunito text-md sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4",
     });
-    console.error("Error downloading file:", err);
   }
 };
+
 
   if (error) {
     return (
