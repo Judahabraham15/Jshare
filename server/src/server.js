@@ -19,7 +19,7 @@ const imageKit = new ImageKit({
 // const fileMetadata = {};
 
 //* Middleware
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "https://jshare-kappa.vercel.app/" }));
 app.use(express.json());
 
 //* Multer configuration (Store in memory)
@@ -45,7 +45,7 @@ app.post("/upload", Uploads.single("file"), async (req, res) => {
 
     res.status(200).json({
       originalName: req.file.originalname,
-      link: `http://localhost:3001/download/${result.fileId}`,
+      link: `https://jshare-server.onrender.com/download/${result.fileId}`,
       imageKitUrl: result.url,
       filename: result.fileId,
     });
@@ -114,7 +114,7 @@ app.get("/recent-Uploads", async (req, res) => {
       return {
         originalname: f.name,
         imageKitUrl: f.url,
-        link: `http://localhost:3001/download/${f.fileId}`,
+        link: `https://jshare-server.onrender.com/download/${f.fileId}`,
         type,
         filename: f.fileId,
       };
@@ -164,7 +164,7 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+//* const PORT = 3001;
+//* app.listen(PORT, () => {
+//*  console.log(`Server is running on port ${PORT}`);
+//*});
