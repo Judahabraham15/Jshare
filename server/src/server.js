@@ -137,6 +137,29 @@ app.delete("/files/:fileId", async (req, res) => {
     res.status(500).json({ error: "Failed to delete File" });
   }
 });
+
+app.get("/download/:fileId", async (req, res) => {
+  try {
+    const fileId = req.params.fileId;
+    const file = await imageKit.getFileDetails(fileId);
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Fetch file from ImageKit URL
+    const response = await fetch(file.url);
+    const buffer = await response.arrayBuffer();
+
+    res.setHeader("Content-Disposition", `attachment; filename="${file.name}"`);
+    res.setHeader("Content-Type", file.mime || "application/octet-stream");
+    res.send(Buffer.from(buffer));
+  } catch (err) {
+    console.error("Download error:", err);
+    res.status(500).json({ error: "Download failed" });
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("Server is running!");
 });
