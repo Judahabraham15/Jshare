@@ -16,12 +16,12 @@ interface FileUploaderProps {
 const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
-  const [link, setLink] = useState<string>("");
+  const [links, setLinks] = useState<string>("");
 
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(link);
+      await navigator.clipboard.writeText(links);
            toast.success("✅ Link Copied to Clipboard" , {
           autoClose: 3000 , 
           position: 'top-right' , 
@@ -41,7 +41,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const handleFileChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedFile(e.target.files[0]);
-      setLink("");
+      setLinks("");
     }
   };
   // ? const btn  = document.querySelector("#file");
@@ -84,7 +84,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           autoClose: 3000,
           className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
-        setLink(response.data.link || "No Link Provided!");
+        setLinks(response.data.link || "No Link Provided!");
         setHasUploaded(true);
         localStorage.setItem("hasUploaded" , "true")//* Save to LocalStorage and sets it to true. Sense!!
         setRefreshKey((prev) => prev + 1);
@@ -97,7 +97,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
           icon: false,
           className:"text-white font-nunito text-md  sm:text-base md:text-lg max-w-[90%] sm:max-w-[400px] mx-2 sm:mx-4"
         })
-        setLink("");
+        setLinks("");
        
         console.error(
           "Upload Failed: Server responded with status",
@@ -209,7 +209,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
         {selectedFile ? (selectedFile.size / (1024 * 1024)).toFixed(2) : "0.00"}{" "}
         MB
       </button>
-      {link && (
+      {links && (
         <div className="mt-4 sm:mt-6 flex items-center justify-between py-3 px-4 sm:px-6 md:px-8 bg-slate-400 rounded-lg w-full max-w-xs sm:max-w-md md:max-w-lg">
           <PiLinkSimpleHorizontalDuotone
             size={18}
@@ -217,10 +217,10 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
             style={{ verticalAlign: "middle" }}
           />
           <Link
-           to={link.replace("http://localhost:3001" , "https://jshare-server.onrender.com")}
+           to={links.replace("http://localhost:3001" , "https://jshare-server.onrender.com")}
            className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
           >
-          File Link: {link}
+          File Link: {links}
           </Link>
             
 
