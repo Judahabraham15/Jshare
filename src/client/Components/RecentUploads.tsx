@@ -129,7 +129,7 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
                 {link}
               </p>
               <div className="flex flex-row gap-3 mt-3">
-                <Link to={link.replace( "https://jshare-server.onrender.com" , "")}>
+                <Link to={link.replace("http://localhost:3001", "https://jshare-server.onrender.com")}>
                   <button
                     className="cursor-pointer mb-2 sm:mb-3 p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
                     style={{ background: "rgba(59, 130, 247, 0.15)" }}

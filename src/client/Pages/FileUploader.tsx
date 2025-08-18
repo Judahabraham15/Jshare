@@ -217,7 +217,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
             style={{ verticalAlign: "middle" }}
           />
           <Link
-           to={link.replace("https://jshare-server.onrender.com" , "")}
+           to={link.replace("http://localhost:3001" , "https://jshare-server.onrender.com")}
            className="font-semibold text-sm sm:text-base underline cursor-pointer truncate"
           >
           File Link: {link}
