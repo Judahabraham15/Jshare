@@ -28,7 +28,7 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
   useEffect(() => {
     const FetchUploads = async () => {
       try {
-        const response = await Axios.get("http://localhost:3001/recent-Uploads"); //! Needs to be changed to the backend url when deployed with render
+        const response = await Axios.get("https://jshare-server.onrender.com/recent-Uploads"); //! Needs to be changed to the backend url when deployed with render
         setrecentUploads(response.data);
       } catch (error) {
         // toast.error("❌ Failed to Fetch Recent Uploads", { ... });
@@ -78,7 +78,7 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
 
   const deleteFile = async (filename: string, idx: number) => {
     try { //!Change the Axios.delete url to backend url after deployment.
-      await Axios.delete(`http://localhost:3001/files/${encodeURIComponent(filename)}`);
+      await Axios.delete(`https://jshare-server.onrender.com/files/${encodeURIComponent(filename)}`);
       setrecentUploads((prev) => prev.filter((_, index) => index !== idx));
       toast.success("🗑️ File deleted successfully", {
         icon: false,
@@ -129,7 +129,7 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
                 {link}
               </p>
               <div className="flex flex-row gap-3 mt-3">
-                <Link to={link.replace("http://localhost:3001", "")}>
+                <Link to={link.replace("http://localhost:3001", "https://jshare-server.onrender.com")}>
                   <button
                     className="cursor-pointer mb-2 sm:mb-3 p-2.5 sm:p-3 rounded-full flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
                     style={{ background: "rgba(59, 130, 247, 0.15)" }}
