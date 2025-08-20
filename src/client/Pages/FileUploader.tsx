@@ -1,6 +1,6 @@
 //! import React from 'react'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Axios, { AxiosError } from "axios";
 import { FiCheckCircle, FiCopy, FiX } from "react-icons/fi";
@@ -8,6 +8,7 @@ import { PiLinkSimpleHorizontalDuotone } from "react-icons/pi";
 import { toast } from "react-toastify";
 import { CiFileOn } from "react-icons/ci";
 import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 interface FileUploaderProps {
   setHasUploaded: (hasUploaded: boolean) => void;
@@ -17,7 +18,16 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [links, setLinks] = useState<string>("");
+  const [sessionId , setSessionId] = useState<string>("");
 
+  useEffect(() => {
+    let id = localStorage.getItem("sessionId");
+      if(!id){
+      id = uuidv4()
+        localStorage.setItem("sessionId" , id)
+      }
+      setSessionId(id)
+  }, []);
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(links);
@@ -69,6 +79,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
 
     const formData: FormData = new FormData();
     formData.append("file", selectedFile);
+    formData.append("sessionId" , sessionId)
     try {
       const response = await Axios.post(
         "https://jshare-server.onrender.com/upload",

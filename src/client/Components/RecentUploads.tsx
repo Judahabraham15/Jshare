@@ -23,14 +23,25 @@ interface RecentUploadProps {
 
 const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
   const [recentUploads, setrecentUploads] = useState<FileMetaData[]>([]);
-
+  const [sessionId , setsessionId] = useState<string>("")
+  
+  useEffect(()=>{
+    const id = localStorage.getItem("sessionId")
+    if(id){
+      setsessionId(id)
+    }
+  } , [])
   useEffect(() => {
     const FetchUploads = async () => {
+      if(!sessionId){
+        return;
+      }
       try {
         const response = await Axios.get(
           "https://jshare-server.onrender.com/recent-Uploads"
         ); //! Needs to be changed to the backend url when deployed with render
         setrecentUploads(response.data);
+        
       } catch (error) {
         // toast.error("❌ Failed to Fetch Recent Uploads", { ... });
       }
