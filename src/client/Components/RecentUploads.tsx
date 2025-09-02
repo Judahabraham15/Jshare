@@ -23,25 +23,26 @@ interface RecentUploadProps {
 
 const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
   const [recentUploads, setrecentUploads] = useState<FileMetaData[]>([]);
-  const [sessionId , setsessionId] = useState<string>("")
-  
-  useEffect(()=>{
-    const id = localStorage.getItem("sessionId")
-    if(id){
-      setsessionId(id)
+  const [sessionId, setsessionId] = useState<string>("");
+
+  useEffect(() => {
+    const id = localStorage.getItem("sessionId");
+    if (id) {
+      setsessionId(id);
     }
-  } , [])
+  }, []);
   useEffect(() => {
     const FetchUploads = async () => {
-      if(!sessionId){
+      if (!sessionId) {
         return;
       }
       try {
         const response = await Axios.get(
-          "https://jshare-server.onrender.com/recent-Uploads"
-        ); //! Needs to be changed to the backend url when deployed with render
+          `https://jshare-server.onrender.com/recent-Uploads?sessionId=${encodeURIComponent(
+            sessionId
+          )}`
+        ); //! Added sessionId as a query parameter.
         setrecentUploads(response.data);
-        
       } catch (error) {
         // toast.error("❌ Failed to Fetch Recent Uploads", { ... });
       }
@@ -98,11 +99,11 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
 
   const deleteFile = async (filename: string, idx: number) => {
     try {
-      //!Change the Axios.delete url to backend url after deployment.
+      //! Added the sessionId as a query parameter.
       await Axios.delete(
         `https://jshare-server.onrender.com/files/${encodeURIComponent(
           filename
-        )}`
+        )}?sessionId=${encodeURIComponent(sessionId)}`
       );
       setrecentUploads((prev) => prev.filter((_, index) => index !== idx));
       toast.success("🗑️ File deleted successfully", {

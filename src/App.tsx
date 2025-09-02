@@ -36,7 +36,6 @@ const App = () => {
               </div>
             }
           />
-
           <Route path="download/:fileId" element={<DownloadPage />} />
         </Route>
       </Routes>

@@ -6,7 +6,7 @@ const ImageKit = require("imagekit");
 require("dotenv").config();
 
 const app = express();
- const baseUrl = process.env.BACKEND_URL || "https://jshare-server.onrender.com";
+const baseUrl = process.env.BACKEND_URL || "https://jshare-server.onrender.com";
 const imageKit = new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
@@ -36,11 +36,16 @@ app.post("/upload", Uploads.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No Files Uploaded" });
     }
 
+    const sessionId = req.body.sessionId;
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID required" });
+    }
+
     const result = await imageKit.upload({
       file: req.file.buffer,
       fileName: req.file.originalname,
       folder: "/jshare_Uploads",
-      tags: ["jshare"],
+      tags: ["jshare", `session_${sessionId}`], // Add session ID tag
     });
 
     res.status(200).json({
@@ -60,7 +65,6 @@ app.post("/upload", Uploads.single("file"), async (req, res) => {
     res.status(500).json({ error: error.message || "Upload Failed" });
   }
 });
-
 //!Test Route
 app.get("/file-info/:fileId", async (req, res) => {
   try {
@@ -98,8 +102,12 @@ app.get("/file-info/:fileId", async (req, res) => {
 app.get("/recent-Uploads", async (req, res) => {
   //* Yo this is to get the recent-uploads info to display them.
   try {
+    const sessionId = req.query.sessionId;
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID required" });
+    }
     const files = await imageKit.listFiles({
-      tags: ["jshare"],
+      tags: ["jshare", `session_${sessionId}`],
       sort: "DESC_CREATED",
     });
     const shaped = files.map((f) => {
@@ -128,16 +136,29 @@ app.get("/recent-Uploads", async (req, res) => {
 //! FILE DELETION
 app.delete("/files/:fileId", async (req, res) => {
   try {
-    const fileId = req.params.fileId;
-    await imageKit.deleteFile(fileId);
+    const sessionId = req.query.sessionId;
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID required" });
+    }
 
+    const fileId = req.params.fileId;
+    const file = await imageKit.getFileDetails(fileId);
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    if (!file.tags || !file.tags.includes(`session_${sessionId}`)) {
+      return res.status(403).json({ error: "Forbidden: You don’t own this file" });
+    }
+
+    await imageKit.deleteFile(fileId);
     res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
     console.error("Delete File error:", error);
     res.status(500).json({ error: "Failed to delete File" });
   }
 });
-
 app.get("/download/:fileId", async (req, res) => {
   try {
     const fileId = req.params.fileId;
