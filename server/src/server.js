@@ -19,7 +19,7 @@ const imageKit = new ImageKit({
 // const fileMetadata = {};
 
 //* Middleware
-app.use(cors({ origin: "https://jshare-hwdp.vercel.app/" }));
+app.use(cors({ origin: "https://jshare-hwdp.vercel.app" }));
 app.use(express.json());
 
 //* Multer configuration (Store in memory)
@@ -185,7 +185,7 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
-//* const PORT = 3001;
-//* app.listen(PORT, () => {
-//*  console.log(`Server is running on port ${PORT}`);
-//*});
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
