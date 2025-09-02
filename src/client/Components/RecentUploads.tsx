@@ -48,7 +48,7 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
       }
     };
     FetchUploads();
-  }, [refreshKey]);
+  }, [refreshKey , sessionId]);
 
   const FileIcon = (type: string) => {
     switch ((type || "").toLowerCase()) {
