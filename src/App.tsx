@@ -8,16 +8,19 @@ import DownloadPage from "./client/Pages/DownloadPage";
 import Cards from "./client/Pages/Cards";
 import RecentUploads from "./client/Components/RecentUploads";
 
+if (!localStorage.getItem("sessionId")) {
+  localStorage.setItem("sessionId", crypto.randomUUID());
+}
 const App = () => {
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [hasUploaded, setHasUploaded] = useState<boolean>(() => {
     //* Load from localStorage on mount
     return localStorage.getItem("hasUploaded") === "true";
   });
-  useEffect(()=>{
-     // *Save hasUploaded to localStorage whenever it changes
+  useEffect(() => {
+    // *Save hasUploaded to localStorage whenever it changes
     localStorage.setItem("hasUploaded", hasUploaded.toString());
-  } , [hasUploaded])
+  }, [hasUploaded]);
 
   return (
     <>
@@ -32,7 +35,7 @@ const App = () => {
                   setRefreshKey={setRefreshKey}
                 />
                 <Cards />
-                <RecentUploads  refreshKey={refreshKey}  />
+                <RecentUploads refreshKey={refreshKey} />
               </div>
             }
           />
