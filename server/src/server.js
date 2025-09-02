@@ -100,33 +100,36 @@ app.get("/file-info/:fileId", async (req, res) => {
 });
 
 app.get("/recent-Uploads", async (req, res) => {
-  //* Yo this is to get the recent-uploads info to display them.
   try {
     const sessionId = req.query.sessionId;
     if (!sessionId) {
       return res.status(400).json({ error: "Session ID required" });
     }
     const files = await imageKit.listFiles({
-      tags: ["jshare", `session_${sessionId}`],
+      tags: ["jshare"], // Only filter by "jshare" tag
       sort: "DESC_CREATED",
     });
-    const shaped = files.map((f) => {
-      const ext =
-        f.name && f.name.includes(".")
-          ? f.name.split(".").pop().toLowerCase()
-          : "";
-      const mimeSuffix = f.mime ? f.mime.split("/").pop() : "";
-      const type =
-        ext || mimeSuffix || (f.fileType === "image" ? "image" : "file");
 
-      return {
-        originalname: f.name,
-        imageKitUrl: f.url,
-        link: `${baseUrl}/download/${f.fileId}`,
-        type,
-        filename: f.fileId,
-      };
-    });
+    // Filter files to only those with the correct session tag
+    const shaped = files
+      .filter((f) => f.tags && f.tags.includes(`session_${sessionId}`))
+      .map((f) => {
+        const ext =
+          f.name && f.name.includes(".")
+            ? f.name.split(".").pop().toLowerCase()
+            : "";
+        const mimeSuffix = f.mime ? f.mime.split("/").pop() : "";
+        const type =
+          ext || mimeSuffix || (f.fileType === "image" ? "image" : "file");
+
+        return {
+          originalname: f.name,
+          imageKitUrl: f.url,
+          link: `${baseUrl}/download/${f.fileId}`,
+          type,
+          filename: f.fileId,
+        };
+      });
     res.status(200).json(shaped);
   } catch (error) {
     console.error("recent-Uploads error:", error);
@@ -149,7 +152,9 @@ app.delete("/files/:fileId", async (req, res) => {
     }
 
     if (!file.tags || !file.tags.includes(`session_${sessionId}`)) {
-      return res.status(403).json({ error: "Forbidden: You don’t own this file" });
+      return res
+        .status(403)
+        .json({ error: "Forbidden: You don’t own this file" });
     }
 
     await imageKit.deleteFile(fileId);
