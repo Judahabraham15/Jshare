@@ -19,7 +19,7 @@ const imageKit = new ImageKit({
 // const fileMetadata = {};
 
 //* Middleware
-app.use(cors({ origin: "https://jshare-kappa.vercel.app/" }));
+app.use(cors({ origin: "https://jshare-hwdp.vercel.app/" }));
 app.use(express.json());
 
 //* Multer configuration (Store in memory)

@@ -239,7 +239,7 @@ const FileUploader = ({ setHasUploaded, setRefreshKey }: FileUploaderProps) => {
             File Link:{" "}
             {links.replace(
               "http://localhost:3001",
-              "https://jshare-kappa.vercel.app/"
+              "https://jshare-hwdp.vercel.app/"
             )}
           </Link>
 

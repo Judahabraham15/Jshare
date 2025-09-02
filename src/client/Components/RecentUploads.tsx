@@ -156,7 +156,7 @@ const RecentUploads = ({ refreshKey }: RecentUploadProps) => {
               <p className="text-slate-400 font-nunito text-sm sm:text-base md:text-lg text-left truncate max-w-full">
                 {link.replace(
                   "http://localhost:3001",
-                  "https://jshare-kappa.vercel.app/"
+                  "https://jshare-hwdp.vercel.app/"
                 )}
               </p>
               <div className="flex flex-row gap-3 mt-3">
